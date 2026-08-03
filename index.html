@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="vi">
+<link rel="manifest" href="manifest.json">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STAT SHEET — Bộ đếm thể chất</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #14161A;
+    --surface: #1C1F26;
+    --surface-raised: #23272F;
+    --surface-hover: #2A2F38;
+    --text: #EDEAE3;
+    --text-muted: #8A8F98;
+    --text-dim: #565B65;
+    --gold: #E3B341;
+    --gold-dim: #6B5A2C;
+    --ember: #E8603C;
+    --ember-dim: #5C3226;
+    --violet: #8C7CE0;
+    --violet-dim: #423A66;
+    --border: #2E323B;
+    --border-soft: #24272F;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js")
+            .then(() => console.log("Service Worker registered"))
+            .catch(err => console.log(err));
+    });
+}
+</script>  
+body{
+    background: var(--bg);
+    color: var(--text);
+    font-family:'Inter', sans-serif;
+    min-height:100vh;
+    padding: 28px 16px 60px;
+  }
+  .wrap{max-width: 920px; margin:0 auto;}
+
+  /* ---------- Header ---------- */
+  .hdr{display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:22px; flex-wrap:wrap; gap:12px;}
+  .hdr .eyebrow{font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:.18em; color:var(--text-dim); text-transform:uppercase;}
+  h1{
+    font-family:'Barlow Condensed', sans-serif;
+    font-weight:800;
+    font-size:42px;
+    letter-spacing:.02em;
+    text-transform:uppercase;
+    line-height:1;
+    color:var(--text);
+  }
+  h1 span{color:var(--gold);}
+  .calo-total{
+    text-align:right;
+    font-family:'JetBrains Mono', monospace;
+  }
+  .calo-total .num{font-size:30px; font-weight:700; color:var(--ember);}
+  .calo-total .lbl{font-size:11px; letter-spacing:.12em; color:var(--text-muted); text-transform:uppercase;}
+
+  /* ---------- Body Map (signature element) ---------- */
+  .bodymap-section{
+    background: var(--surface);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding: 24px 12px;
+    margin-bottom:24px;
+    position:relative;
+    overflow:hidden;
+  }
+  .bodymap-section::before{
+    content:'';
+    position:absolute; inset:0;
+    background: radial-gradient(circle at 50% 20%, rgba(227,179,65,0.06), transparent 60%);
+    pointer-events:none;
+  }
+  .bodymap-grid{
+    display:grid;
+    grid-template-columns: 1fr 280px;
+    gap: 20px;
+    align-items:center;
+  }
+  @media(max-width:680px){ .bodymap-grid{grid-template-columns:1fr;} }
+
+  #silhouette{width:100%; max-width:300px; display:block; margin:0 auto;}
+  .node-dot{fill:var(--surface-raised); stroke:var(--border); stroke-width:1.5; cursor:default; transition: all .25s ease;}
+  .node-dot.lit{fill:var(--gold); stroke:var(--gold);}
+  .node-pulse{fill:none; stroke:var(--gold); stroke-width:1; opacity:0;}
+  .node-pulse.animate{animation: pulseRing 1.8s ease-out infinite;}
+  @keyframes pulseRing{
+    0%{ opacity:.55; r:9; }
+    100%{ opacity:0; r:20; }
+  }
+  .node-lvl{font-family:'JetBrains Mono', monospace; font-size:8.5px; font-weight:700; fill:var(--bg); text-anchor:middle; dominant-baseline:central;}
+  .node-lvl.dim{fill:var(--text-dim);}
+
+  .stat-list{display:flex; flex-direction:column; gap:9px; max-height:440px; overflow-y:auto; padding-right:4px;}
+  .stat-row .top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;}
+  .stat-row .name{font-family:'Barlow Condensed', sans-serif; font-weight:600; font-size:14.5px; text-transform:uppercase; letter-spacing:.03em; color:var(--text);}
+  .stat-row .lvl{font-family:'JetBrains Mono', monospace; font-size:10.5px; color:var(--gold);}
+  .bar-track{height:5px; background:var(--border-soft); border-radius:3px; overflow:hidden;}
+  .bar-fill{height:100%; background: linear-gradient(90deg, var(--gold-dim), var(--gold)); border-radius:3px; transition: width .5s ease;}
+  .stat-row .xp-sub{font-family:'JetBrains Mono', monospace; font-size:9.5px; color:var(--text-dim); margin-top:2px;}
+
+  /* ---------- Sections ---------- */
+  .section-title{
+    font-family:'Barlow Condensed', sans-serif;
+    font-weight:700;
+    font-size:20px;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    margin-bottom:12px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .section-title .idx{color:var(--text-dim); font-family:'JetBrains Mono', monospace; font-size:13px; font-weight:400;}
+
+  /* ---------- Exercise cards ---------- */
+  .ex-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px,1fr));
+    gap:12px;
+    margin-bottom:28px;
+  }
+  .ex-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:16px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    transition: border-color .2s ease;
+  }
+  .ex-card:hover{border-color:var(--gold-dim);}
+  .ex-card .ex-name{font-family:'Barlow Condensed', sans-serif; font-size:19px; font-weight:700; text-transform:uppercase; letter-spacing:.02em;}
+  .ex-card .ex-tags{display:flex; flex-wrap:wrap; gap:6px;}
+  .tag{
+    font-family:'JetBrains Mono', monospace;
+    font-size:10.5px;
+    padding:2px 7px;
+    border-radius:20px;
+    background:var(--surface-raised);
+    color:var(--text-muted);
+    border:1px solid var(--border);
+  }
+  .tag.calo{color:var(--ember); border-color:var(--ember-dim);}
+  .ex-card .ex-count{font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-dim);}
+  .ex-actions{display:flex; gap:8px; align-items:center; margin-top:2px;}
+  .btn-plus{
+    flex:1;
+    background: var(--gold);
+    color:#1a1608;
+    border:none;
+    border-radius:8px;
+    padding:9px 0;
+    font-family:'Barlow Condensed', sans-serif;
+    font-weight:700;
+    font-size:16px;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    cursor:pointer;
+    transition: transform .1s ease, background .2s ease;
+  }
+  .btn-plus:active{transform:scale(0.96);}
+  .btn-plus:hover{background:#f0c25a;}
+  .btn-del{
+    background:transparent;
+    border:1px solid var(--border);
+    color:var(--text-dim);
+    border-radius:8px;
+    width:34px; height:34px;
+    cursor:pointer;
+    font-size:15px;
+    line-height:1;
+    transition: all .2s ease;
+    flex-shrink:0;
+  }
+  .btn-del:hover{border-color:var(--ember); color:var(--ember);}
+
+  /* ---------- Form ---------- */
+  .form-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:20px;
+    margin-bottom:28px;
+  }
+  .form-row{margin-bottom:14px;}
+  label{
+    display:block;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--text-muted);
+    margin-bottom:6px;
+  }
+  input[type=text], input[type=number], select{
+    width:100%;
+    background:var(--surface-raised);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:10px 12px;
+    color:var(--text);
+    font-family:'Inter', sans-serif;
+    font-size:14px;
+    outline:none;
+    transition: border-color .2s ease;
+  }
+  select{appearance:none; cursor:pointer;}
+  input:focus, select:focus{border-color:var(--gold);}
+  .xp-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(90px,1fr));
+    gap:10px;
+  }
+  .xp-input-group label{color:var(--text-dim);}
+  .xp-input-group input{text-align:center; font-family:'JetBrains Mono', monospace;}
+  .form-footer{display:flex; justify-content:space-between; align-items:center; margin-top:16px; flex-wrap:wrap; gap:10px;}
+  .btn-primary{
+    background:var(--gold);
+    color:#1a1608;
+    border:none;
+    border-radius:8px;
+    padding:11px 22px;
+    font-family:'Barlow Condensed', sans-serif;
+    font-weight:700;
+    font-size:16px;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    cursor:pointer;
+  }
+  .btn-primary:hover{background:#f0c25a;}
+  .btn-ghost{
+    background:transparent;
+    border:1px solid var(--border);
+    color:var(--text-muted);
+    border-radius:8px;
+    padding:10px 16px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    cursor:pointer;
+  }
+  .btn-ghost:hover{border-color:var(--text-dim); color:var(--text);}
+
+  /* ---------- Log ---------- */
+  .log-list{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding: 6px 20px;
+    max-height:220px;
+    overflow-y:auto;
+  }
+  .log-item{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:10px 0;
+    border-bottom:1px solid var(--border-soft);
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+  }
+  .log-item:last-child{border-bottom:none;}
+  .log-item .lname{color:var(--text); font-family:'Inter',sans-serif; font-size:13px;}
+  .log-item .ltime{color:var(--text-dim); font-size:10.5px;}
+  .log-item .lcalo{color:var(--ember);}
+  .empty-log{color:var(--text-dim); font-size:12.5px; padding:16px 0; text-align:center; font-family:'Inter',sans-serif;}
+
+  /* ---------- Rank up ---------- */
+  .badge-shelf{
+    display:flex; flex-wrap:wrap; gap:10px;
+    margin-bottom:16px;
+  }
+  .badge-item{
+    display:flex; align-items:center; gap:8px;
+    background: linear-gradient(135deg, rgba(227,179,65,0.14), rgba(227,179,65,0.04));
+    border:1px solid var(--gold-dim);
+    border-radius:30px;
+    padding:7px 16px 7px 12px;
+    font-family:'Barlow Condensed', sans-serif;
+    font-weight:600;
+    font-size:15px;
+    letter-spacing:.02em;
+    color:var(--gold);
+  }
+  .badge-item .trophy{font-size:14px;}
+  .rank-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
+    gap:12px;
+    margin-bottom:28px;
+  }
+  .rank-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:16px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .rank-card.ready{border-color:var(--violet-dim);}
+  .rank-card .rank-top{display:flex; justify-content:space-between; align-items:flex-start; gap:8px;}
+  .rank-card .rank-name{font-family:'Barlow Condensed', sans-serif; font-size:19px; font-weight:700; text-transform:uppercase; letter-spacing:.02em;}
+  .req-item{margin-bottom:6px;}
+  .req-item .req-top{display:flex; justify-content:space-between; font-family:'JetBrains Mono', monospace; font-size:10.5px; color:var(--text-muted); margin-bottom:3px;}
+  .req-bar-track{height:5px; background:var(--border-soft); border-radius:3px; overflow:hidden;}
+  .req-bar-fill{height:100%; background: linear-gradient(90deg, var(--violet-dim), var(--violet)); border-radius:3px;}
+  .req-bar-fill.done{background: linear-gradient(90deg, var(--gold-dim), var(--gold));}
+  .test-desc{
+    font-size:12.5px;
+    color:var(--text-muted);
+    background:var(--surface-raised);
+    border:1px solid var(--border-soft);
+    border-radius:8px;
+    padding:8px 10px;
+    line-height:1.4;
+  }
+  .test-desc b{color:var(--text); font-weight:600;}
+  .rank-status{
+    font-family:'JetBrains Mono', monospace;
+    font-size:10.5px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    padding:4px 0;
+  }
+  .rank-status.locked{color:var(--text-dim);}
+  .rank-status.ready{color:var(--violet);}
+  .rank-status.done{color:var(--gold);}
+  .rank-actions{display:flex; gap:8px;}
+  .req-row{
+    display:flex; gap:8px; margin-bottom:8px; align-items:center;
+  }
+  .req-row select{flex:1.3;}
+  .req-row input{flex:1; text-align:center; font-family:'JetBrains Mono', monospace;}
+  .req-row .btn-del{width:34px; height:34px; font-size:13px;}
+
+  ::-webkit-scrollbar{width:6px;}
+  ::-webkit-scrollbar-thumb{background:var(--border); border-radius:3px;}
+
+  .footer-actions{display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap; margin-top:18px;}
+
+  .modal-overlay{
+    display:none;
+    position:fixed; inset:0; background:rgba(10,11,13,0.75);
+    align-items:center; justify-content:center; z-index:100; padding:20px;
+  }
+  .modal-overlay.show{display:flex;}
+  .modal-box{
+    background:var(--surface); border:1px solid var(--border); border-radius:14px;
+    padding:22px; max-width:480px; width:100%;
+  }
+  .modal-title{font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:20px; text-transform:uppercase; letter-spacing:.03em; margin-bottom:8px;}
+  .modal-desc{font-size:13px; color:var(--text-muted); margin-bottom:12px; line-height:1.5;}
+  .modal-textarea{
+    width:100%; height:140px; resize:vertical;
+    background:var(--surface-raised); border:1px solid var(--border); border-radius:8px;
+    color:var(--text); font-family:'JetBrains Mono', monospace; font-size:11px;
+    padding:10px 12px; outline:none;
+  }
+  .modal-textarea:focus{border-color:var(--gold);}
+  .modal-actions{display:flex; justify-content:flex-end; gap:10px; margin-top:14px;}
+
+  .toast{
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+    background:var(--surface-raised); border:1px solid var(--gold-dim);
+    color:var(--gold); padding:10px 20px; border-radius:30px;
+    font-family:'JetBrains Mono', monospace; font-size:12.5px;
+    opacity:0; pointer-events:none; transition: opacity .3s ease, transform .3s ease;
+    z-index:50; max-width:90vw; text-align:center;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(-6px);}
+  .sync-btn{
+    display:flex; align-items:center; gap:6px;
+    background:var(--surface); border:1px solid var(--border); border-radius:20px;
+    padding:6px 14px; font-family:'JetBrains Mono', monospace; font-size:11px;
+    color:var(--text-muted); cursor:pointer; white-space:nowrap;
+  }
+  .sync-btn:hover{border-color:var(--gold-dim); color:var(--gold);}
+  .sync-btn.active{color:var(--gold); border-color:var(--gold-dim);}
+</style>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hdr">
+    <div>
+      <div class="eyebrow">Nhật ký tập luyện · Chỉ số cơ thể</div>
+      <h1>STAT<span>·</span>SHEET</h1>
+    </div>
+    <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+      <button class="sync-btn" id="syncStatus" onclick="openSyncModal()">💾 Chỉ máy này</button>
+      <div class="calo-total">
+        <div class="num" id="totalCalo">0</div>
+        <div class="lbl">kcal đã đốt</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BODY MAP -->
+  <div class="bodymap-section">
+    <div class="bodymap-grid">
+      <svg id="silhouette" viewBox="0 0 300 480" xmlns="http://www.w3.org/2000/svg">
+        <g fill="none" stroke="#33383F" stroke-width="2">
+          <circle cx="150" cy="42" r="24"/>
+          <path d="M150 66 C 110 70, 90 90, 84 120 L 78 195 C 76 210, 82 218, 92 216 L 100 160 L 96 260 C 95 275, 100 285, 112 288 L 118 400 C 118 412, 128 418, 136 416 L 140 300 L 146 300 L 150 416 C 158 418, 168 412, 168 400 L 174 288 C 186 285, 191 275, 190 260 L 186 160 L 194 216 C 204 218, 210 210, 208 195 L 202 120 C 196 90, 176 70, 150 66 Z"/>
+        </g>
+        <g stroke="#2E323B" stroke-width="1" stroke-dasharray="2,3">
+          <line x1="88" y1="98" x2="30" y2="98"/>
+          <line x1="133" y1="123" x2="30" y2="123"/>
+          <line x1="167" y1="123" x2="270" y2="123"/>
+          <line x1="150" y1="153" x2="270" y2="153"/>
+          <line x1="150" y1="198" x2="270" y2="200"/>
+          <line x1="203" y1="173" x2="270" y2="175"/>
+          <line x1="205" y1="228" x2="270" y2="230"/>
+          <line x1="150" y1="270" x2="30" y2="270"/>
+          <line x1="150" y1="390" x2="230" y2="410"/>
+          <line x1="150" y1="440" x2="30" y2="440"/>
+        </g>
+        <g id="node-vai"><circle class="node-pulse" cx="88" cy="98" r="9"/><circle class="node-dot" cx="88" cy="98" r="11"/><text class="node-lvl" x="88" y="99">1</text></g>
+        <g id="node-tim"><circle class="node-pulse" cx="133" cy="123" r="9"/><circle class="node-dot" cx="133" cy="123" r="11"/><text class="node-lvl" x="133" y="124">1</text></g>
+        <g id="node-phoi"><circle class="node-pulse" cx="167" cy="123" r="9"/><circle class="node-dot" cx="167" cy="123" r="11"/><text class="node-lvl" x="167" y="124">1</text></g>
+        <g id="node-nguc"><circle class="node-pulse" cx="150" cy="153" r="9"/><circle class="node-dot" cx="150" cy="153" r="11"/><text class="node-lvl" x="150" y="154">1</text></g>
+        <g id="node-core"><circle class="node-pulse" cx="150" cy="198" r="9"/><circle class="node-dot" cx="150" cy="198" r="11"/><text class="node-lvl" x="150" y="199">1</text></g>
+        <g id="node-lung"><circle class="node-pulse" cx="203" cy="173" r="9"/><circle class="node-dot" cx="203" cy="173" r="11"/><text class="node-lvl" x="203" y="174">1</text></g>
+        <g id="node-tay"><circle class="node-pulse" cx="205" cy="228" r="9"/><circle class="node-dot" cx="205" cy="228" r="11"/><text class="node-lvl" x="205" y="229">1</text></g>
+        <g id="node-mong"><circle class="node-pulse" cx="150" cy="270" r="9"/><circle class="node-dot" cx="150" cy="270" r="11"/><text class="node-lvl" x="150" y="271">1</text></g>
+        <g id="node-chan"><circle class="node-pulse" cx="150" cy="390" r="9"/><circle class="node-dot" cx="150" cy="390" r="11"/><text class="node-lvl" x="150" y="391">1</text></g>
+        <g id="node-nhanhnhen"><circle class="node-pulse" cx="150" cy="440" r="9"/><circle class="node-dot" cx="150" cy="440" r="11"/><text class="node-lvl" x="150" y="441">1</text></g>
+      </svg>
+
+      <div class="stat-list" id="statList"></div>
+    </div>
+  </div>
+
+  <!-- EXERCISE LIBRARY -->
+  <div class="section-title"><span class="idx">01</span> Bài tập</div>
+  <div class="ex-grid" id="exGrid"></div>
+
+  <!-- ADD EXERCISE FORM -->
+  <div class="section-title"><span class="idx">02</span> Tạo bài tập mới</div>
+  <div class="form-card">
+    <div class="form-row">
+      <label for="exName">Tên bài tập</label>
+      <input type="text" id="exName" placeholder="VD: Push up">
+    </div>
+    <div class="form-row">
+      <label>XP cộng vào từng bộ phận (mỗi lần bấm +1)</label>
+      <div class="xp-grid" id="xpGridForm"></div>
+    </div>
+    <div class="form-row" style="max-width:180px;">
+      <label for="exCalo">Calo đốt / lần</label>
+      <input type="number" id="exCalo" value="0" min="0" step="0.5">
+    </div>
+    <div class="form-footer">
+      <button class="btn-primary" onclick="addExercise()">+ Thêm bài tập</button>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim);">VD: Push up → Ngực +1, Vai +1, Tay +1, Calo 5</span>
+    </div>
+  </div>
+
+  <!-- RANK UP -->
+  <div class="section-title"><span class="idx">03</span> Rank Up</div>
+  <div class="badge-shelf" id="badgeShelf"></div>
+  <div class="rank-grid" id="rankGrid"></div>
+
+  <div class="section-title"><span class="idx">04</span> Tạo danh hiệu / rank mới</div>
+  <div class="form-card">
+    <div class="form-row">
+      <label for="rankName">Tên danh hiệu (rank)</label>
+      <input type="text" id="rankName" placeholder="VD: Sky Walker II">
+    </div>
+    <div class="form-row">
+      <label>Điều kiện XP để đủ tư cách làm test</label>
+      <div id="reqRows"></div>
+      <button class="btn-ghost" type="button" onclick="addReqRow()">+ Thêm điều kiện</button>
+    </div>
+    <div class="form-row">
+      <label for="rankTest">Mô tả bài test (tùy chọn — tự xác nhận khi hoàn thành)</label>
+      <input type="text" id="rankTest" placeholder="VD: Nhảy cao chạm mốc 1m55">
+    </div>
+    <div class="form-footer">
+      <button class="btn-primary" onclick="addRank()">+ Thêm danh hiệu</button>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim);">VD: Sky Walker — cần 500 XP Chân → đủ điều kiện làm test</span>
+    </div>
+  </div>
+
+  <!-- LOG -->
+  <div class="section-title"><span class="idx">05</span> Nhật ký hôm nay</div>
+  <div class="log-list" id="logList"></div>
+  <div class="footer-actions">
+    <button class="btn-ghost" onclick="openExportModal()">⇧ Xuất dữ liệu</button>
+    <button class="btn-ghost" onclick="openImportModal()">⇩ Nhập dữ liệu</button>
+    <button class="btn-ghost" onclick="resetAll()">↺ Đặt lại toàn bộ dữ liệu</button>
+  </div>
+
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <div class="modal-title" id="modalTitle"></div>
+    <p class="modal-desc" id="modalDesc"></p>
+    <textarea id="modalTextarea" class="modal-textarea"></textarea>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal()">Đóng</button>
+      <button class="btn-primary" id="modalActionBtn"></button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="syncModalOverlay">
+  <div class="modal-box">
+    <div class="modal-title">Đồng bộ đa thiết bị</div>
+    <p class="modal-desc">Đặt một mã bất kỳ (không dấu cách, vd <code>nam-fitness-2026</code>). Nhập <b>cùng mã này</b> ở điện thoại và laptop — dữ liệu sẽ tự động đồng bộ hai chiều theo thời gian thực, miễn là có mạng.</p>
+    <input type="text" id="syncCodeInput" placeholder="VD: nam-fitness-2026" style="width:100%; background:var(--surface-raised); border:1px solid var(--border); border-radius:8px; padding:10px 12px; color:var(--text); font-family:'JetBrains Mono',monospace; font-size:14px; outline:none; margin-bottom:4px;">
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeSyncModal()">Đóng</button>
+      <button class="btn-ghost" onclick="disableSync()">Chỉ lưu máy này</button>
+      <button class="btn-primary" onclick="applySyncCode()">Lưu & đồng bộ</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PARTS = ['vai','nguc','tay','mong','chan','core','lung','nhanhnhen','tim','phoi'];
+const PART_LABELS = {
+  vai:'Vai', nguc:'Ngực', tay:'Tay', mong:'Mông', chan:'Chân',
+  core:'Core', lung:'Lưng', nhanhnhen:'Nhanh nhẹn', tim:'Tim', phoi:'Phổi'
+};
+const XP_PER_LEVEL = 20;
+
+let state = {
+  exercises: [],
+  stats: {vai:0, nguc:0, tay:0, mong:0, chan:0, core:0, lung:0, nhanhnhen:0, tim:0, phoi:0},
+  totalCalo: 0,
+  log: [],
+  ranks: []
+};
+
+const defaultExercises = [
+  {id:'push-up', name:'Push up', xp:{vai:1,nguc:1,tay:1}, calo:5, count:0},
+  {id:'squat', name:'Squat', xp:{mong:1,chan:1,core:1}, calo:6, count:0},
+  {id:'plank-30s', name:'Plank (30s)', xp:{core:1,lung:1}, calo:3, count:0},
+  {id:'lunge', name:'Lunge', xp:{mong:1,chan:1,nhanhnhen:1}, calo:4, count:0},
+];
+
+/* Dùng window.storage khi mở dưới dạng artifact trong Claude.
+   Nếu không có (vd: mở file .html tải về bằng trình duyệt riêng),
+   tự động chuyển sang localStorage của trình duyệt để vẫn lưu được. */
+const STORAGE_KEY = 'fitness-state';
+const hasClaudeStorage = (typeof window.storage !== 'undefined' && window.storage && typeof window.storage.get === 'function');
+
+const storageAdapter = {
+  async get(key){
+    if(hasClaudeStorage){
+      return await window.storage.get(key, false);
+    }
+    const raw = localStorage.getItem(key);
+    return raw ? {key, value: raw, shared:false} : null;
+  },
+  async set(key, value){
+    if(hasClaudeStorage){
+      return await window.storage.set(key, value, false);
+    }
+    localStorage.setItem(key, value);
+    return {key, value, shared:false};
+  }
+};
+
+/* ---------- Đồng bộ đa thiết bị qua Firebase Firestore ---------- */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBU7ON86_QC37rFyLpouVjraBQP7jp1TRQ",
+  authDomain: "fitness-7ee30.firebaseapp.com",
+  projectId: "fitness-7ee30",
+  storageBucket: "fitness-7ee30.firebasestorage.app",
+  messagingSenderId: "371901092977",
+  appId: "1:371901092977:web:6f5024623f5c538035f7d0"
+};
+let firebaseApp = null, db = null, unsubscribeSnapshot = null, syncSuppress = false;
+let syncCode = localStorage.getItem('fitness-sync-code') || '';
+
+function defaultStats(){
+  return {vai:0, nguc:0, tay:0, mong:0, chan:0, core:0, lung:0, nhanhnhen:0, tim:0, phoi:0};
+}
+
+function initFirebase(){
+  if(firebaseApp) return true;
+  try{
+    firebaseApp = firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.firestore();
+    return true;
+  }catch(e){
+    console.error('Firebase init lỗi', e);
+    return false;
+  }
+}
+
+function updateSyncIndicator(connected){
+  const el = document.getElementById('syncStatus');
+  if(!el) return;
+  if(!syncCode){
+    el.textContent = '💾 Chỉ máy này';
+    el.classList.remove('active');
+  } else {
+    el.textContent = connected === false ? ('⚠ Mất kết nối · ' + syncCode) : ('🔗 ' + syncCode);
+    el.classList.add('active');
+  }
+}
+
+function openSyncModal(){
+  document.getElementById('syncCodeInput').value = syncCode;
+  document.getElementById('syncModalOverlay').classList.add('show');
+}
+function closeSyncModal(){
+  document.getElementById('syncModalOverlay').classList.remove('show');
+}
+
+async function applySyncCode(){
+  const val = document.getElementById('syncCodeInput').value.trim();
+  if(!val){ showToast('Nhập mã trước đã'); return; }
+  syncCode = val;
+  localStorage.setItem('fitness-sync-code', syncCode);
+  closeSyncModal();
+  showToast('Đang kết nối đồng bộ...');
+  await connectSync();
+}
+
+async function disableSync(){
+  syncCode = '';
+  localStorage.removeItem('fitness-sync-code');
+  if(unsubscribeSnapshot){ unsubscribeSnapshot(); unsubscribeSnapshot = null; }
+  updateSyncIndicator();
+  closeSyncModal();
+  showToast('Đã tắt đồng bộ — chỉ lưu trên máy này');
+}
+
+function mergeRemoteState(payloadStr){
+  try{
+    const parsed = JSON.parse(payloadStr);
+    syncSuppress = true;
+    state = Object.assign(state, parsed);
+    state.stats = Object.assign(defaultStats(), state.stats || {});
+    if(!Array.isArray(state.ranks)) state.ranks = [];
+    if(!Array.isArray(state.exercises)) state.exercises = defaultExercises;
+    if(!Array.isArray(state.log)) state.log = [];
+    render();
+    syncSuppress = false;
+  }catch(e){ console.error('Lỗi hợp nhất dữ liệu đồng bộ', e); syncSuppress = false; }
+}
+
+async function connectSync(){
+  if(!syncCode) { updateSyncIndicator(); return; }
+  if(!initFirebase()){ updateSyncIndicator(false); return; }
+  if(unsubscribeSnapshot){ unsubscribeSnapshot(); unsubscribeSnapshot = null; }
+  const docRef = db.collection('fitness_sync').doc(syncCode);
+  try{
+    const snap = await docRef.get();
+    if(snap.exists && snap.data().payload){
+      mergeRemoteState(snap.data().payload);
+    } else {
+      await docRef.set({ payload: JSON.stringify(state), updatedAt: Date.now() });
+    }
+    updateSyncIndicator(true);
+  }catch(e){
+    console.error('Lỗi kết nối đồng bộ', e);
+    updateSyncIndicator(false);
+    showToast('Không kết nối được — kiểm tra mạng hoặc cấu hình Firestore');
+    return;
+  }
+
+  unsubscribeSnapshot = docRef.onSnapshot(
+    doc=>{
+      if(!doc.exists || syncSuppress) return;
+      const data = doc.data();
+      if(data && data.payload) mergeRemoteState(data.payload);
+      updateSyncIndicator(true);
+    },
+    err=>{ console.error('Lỗi lắng nghe đồng bộ', err); updateSyncIndicator(false); }
+  );
+}
+
+async function pushSync(){
+  if(!syncCode || !db) return;
+  try{
+    await db.collection('fitness_sync').doc(syncCode).set({
+      payload: JSON.stringify(state), updatedAt: Date.now()
+    });
+  }catch(e){ console.error('Lỗi đẩy dữ liệu lên đồng bộ', e); }
+}
+
+async function loadState(){
+  try{
+    const res = await storageAdapter.get(STORAGE_KEY);
+    if(res && res.value){
+      const parsed = JSON.parse(res.value);
+      state = Object.assign(state, parsed);
+      state.stats = Object.assign(defaultStats(), state.stats || {});
+      if(!Array.isArray(state.ranks)) state.ranks = [];
+    } else {
+      state.exercises = defaultExercises;
+      await saveState();
+    }
+  }catch(e){
+    console.error('Lỗi tải dữ liệu', e);
+    state.exercises = defaultExercises;
+  }
+  buildXpForm();
+  render();
+  updateSyncIndicator();
+  if(syncCode) await connectSync();
+}
+
+async function saveState(){
+  try{
+    await storageAdapter.set(STORAGE_KEY, JSON.stringify(state));
+  }catch(e){ console.error('Lỗi lưu dữ liệu', e); }
+  if(!syncSuppress) await pushSync();
+}
+
+function levelInfo(xp){
+  const level = Math.floor(xp / XP_PER_LEVEL) + 1;
+  const into = xp % XP_PER_LEVEL;
+  const pct = Math.round((into / XP_PER_LEVEL) * 100);
+  return {level, into, pct};
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=> t.classList.remove('show'), 1800);
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function buildXpForm(){
+  const el = document.getElementById('xpGridForm');
+  el.innerHTML = PARTS.map(p=>
+    `<div class="xp-input-group"><label>${PART_LABELS[p]}</label><input type="number" id="xp-${p}" value="0" min="0"></div>`
+  ).join('');
+}
+
+/* ---------- Body map & stat list ---------- */
+function renderBodyMap(){
+  PARTS.forEach(p=>{
+    const xp = state.stats[p] || 0;
+    const {level} = levelInfo(xp);
+    const node = document.getElementById('node-'+p);
+    if(!node) return;
+    const lvlText = node.querySelector('.node-lvl');
+    const dot = node.querySelector('.node-dot');
+    const pulse = node.querySelector('.node-pulse');
+    lvlText.textContent = level;
+    if(level > 1){
+      dot.classList.add('lit');
+      lvlText.classList.remove('dim');
+      pulse.classList.add('animate');
+    } else {
+      dot.classList.remove('lit');
+      lvlText.classList.add('dim');
+      pulse.classList.remove('animate');
+    }
+  });
+}
+
+function renderStatList(){
+  const el = document.getElementById('statList');
+  el.innerHTML = PARTS.map(p=>{
+    const xp = state.stats[p] || 0;
+    const {level, into, pct} = levelInfo(xp);
+    return `<div class="stat-row">
+      <div class="top">
+        <span class="name">${PART_LABELS[p]}</span>
+        <span class="lvl">LV ${level}</span>
+      </div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+      <div class="xp-sub">${into} / ${XP_PER_LEVEL} XP · tổng ${xp} XP</div>
+    </div>`;
+  }).join('');
+}
+
+/* ---------- Exercises ---------- */
+function renderExercises(){
+  const el = document.getElementById('exGrid');
+  if(state.exercises.length === 0){
+    el.innerHTML = `<div class="empty-log">Chưa có bài tập nào. Thêm bài tập ở mục 02.</div>`;
+    return;
+  }
+  el.innerHTML = state.exercises.map(ex=>{
+    const tags = PARTS.filter(p=> ex.xp[p] > 0).map(p=>
+      `<span class="tag">${PART_LABELS[p]} +${ex.xp[p]}</span>`
+    ).join('');
+    return `<div class="ex-card">
+      <div class="ex-name">${escapeHtml(ex.name)}</div>
+      <div class="ex-tags">${tags}<span class="tag calo">🔥 ${ex.calo} kcal</span></div>
+      <div class="ex-count">Đã thực hiện: ${ex.count} lần</div>
+      <div class="ex-actions">
+        <button class="btn-plus" onclick="logExercise('${ex.id}')">+1 lần</button>
+        <button class="btn-del" onclick="deleteExercise('${ex.id}')" title="Xóa bài tập">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function logExercise(id){
+  const ex = state.exercises.find(e=> e.id === id);
+  if(!ex) return;
+  PARTS.forEach(p=>{
+    state.stats[p] = (state.stats[p] || 0) + (ex.xp[p] || 0);
+  });
+  state.totalCalo += ex.calo;
+  ex.count += 1;
+  const now = new Date();
+  state.log.push({
+    name: ex.name,
+    calo: ex.calo,
+    time: now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0')
+  });
+  render();
+  showToast(`${ex.name} +${ex.calo} kcal`);
+  await saveState();
+}
+
+async function deleteExercise(id){
+  state.exercises = state.exercises.filter(e=> e.id !== id);
+  render();
+  await saveState();
+}
+
+async function addExercise(){
+  const nameInput = document.getElementById('exName');
+  const name = nameInput.value.trim();
+  if(!name){ showToast('Nhập tên bài tập trước đã'); return; }
+  const xp = {};
+  PARTS.forEach(p=>{
+    xp[p] = Math.max(0, parseFloat(document.getElementById('xp-'+p).value) || 0);
+  });
+  const calo = Math.max(0, parseFloat(document.getElementById('exCalo').value) || 0);
+  const id = name.toLowerCase().replace(/[^a-z0-9\u00c0-\u1ef9\s-]/gi,'').replace(/\s+/g,'-') + '-' + Date.now();
+
+  state.exercises.push({id, name, xp, calo, count:0});
+  nameInput.value = '';
+  PARTS.forEach(p=> document.getElementById('xp-'+p).value = 0);
+  document.getElementById('exCalo').value = 0;
+  render();
+  showToast('Đã thêm bài tập mới');
+  await saveState();
+}
+
+/* ---------- Rank up ---------- */
+let reqRowCounter = 0;
+function addReqRow(stat, xp){
+  reqRowCounter++;
+  const rowId = 'req-row-' + reqRowCounter;
+  const wrap = document.createElement('div');
+  wrap.className = 'req-row';
+  wrap.id = rowId;
+  const options = PARTS.map(p=> `<option value="${p}" ${p===stat?'selected':''}>${PART_LABELS[p]}</option>`).join('');
+  wrap.innerHTML = `
+    <select class="req-stat">${options}</select>
+    <input type="number" class="req-xp" min="1" value="${xp || 100}" placeholder="XP">
+    <button type="button" class="btn-del" onclick="document.getElementById('${rowId}').remove()">✕</button>
+  `;
+  document.getElementById('reqRows').appendChild(wrap);
+}
+
+async function addRank(){
+  const nameInput = document.getElementById('rankName');
+  const name = nameInput.value.trim();
+  if(!name){ showToast('Nhập tên danh hiệu trước đã'); return; }
+  const rows = document.querySelectorAll('#reqRows .req-row');
+  const requirements = [];
+  rows.forEach(row=>{
+    const stat = row.querySelector('.req-stat').value;
+    const xp = Math.max(1, parseFloat(row.querySelector('.req-xp').value) || 0);
+    if(xp > 0) requirements.push({stat, xp});
+  });
+  if(requirements.length === 0){ showToast('Thêm ít nhất 1 điều kiện XP'); return; }
+  const testDesc = document.getElementById('rankTest').value.trim();
+
+  state.ranks.push({
+    id: 'rank-' + Date.now(),
+    name, requirements, testDesc,
+    completed:false
+  });
+  nameInput.value = '';
+  document.getElementById('rankTest').value = '';
+  document.getElementById('reqRows').innerHTML = '';
+  render();
+  showToast('Đã thêm danh hiệu mới');
+  await saveState();
+}
+
+async function deleteRank(id){
+  state.ranks = state.ranks.filter(r=> r.id !== id);
+  render();
+  await saveState();
+}
+
+async function completeRank(id){
+  const rank = state.ranks.find(r=> r.id === id);
+  if(!rank) return;
+  rank.completed = true;
+  render();
+  showToast(`🏆 Đạt danh hiệu "${rank.name}"!`);
+  await saveState();
+}
+
+function renderRanks(){
+  const shelf = document.getElementById('badgeShelf');
+  const achieved = state.ranks.filter(r=> r.completed);
+  shelf.innerHTML = achieved.length === 0
+    ? ''
+    : achieved.map(r=> `<div class="badge-item"><span class="trophy">🏆</span>${escapeHtml(r.name)}</div>`).join('');
+
+  const grid = document.getElementById('rankGrid');
+  const pending = state.ranks.filter(r=> !r.completed);
+  if(state.ranks.length === 0){
+    grid.innerHTML = `<div class="empty-log">Chưa có danh hiệu nào. Tạo rank mới ở mục 04.</div>`;
+    return;
+  }
+  if(pending.length === 0){
+    grid.innerHTML = `<div class="empty-log">Đã hoàn thành tất cả danh hiệu hiện có — thêm thử thách mới đi!</div>`;
+    return;
+  }
+  grid.innerHTML = pending.map(r=>{
+    const reqHtml = r.requirements.map(req=>{
+      const cur = state.stats[req.stat] || 0;
+      const pct = Math.min(100, Math.round((cur / req.xp) * 100));
+      const done = cur >= req.xp;
+      return `<div class="req-item">
+        <div class="req-top"><span>${PART_LABELS[req.stat]}</span><span>${Math.min(cur,req.xp)}/${req.xp} XP</span></div>
+        <div class="req-bar-track"><div class="req-bar-fill ${done?'done':''}" style="width:${pct}%"></div></div>
+      </div>`;
+    }).join('');
+    const ready = r.requirements.every(req=> (state.stats[req.stat]||0) >= req.xp);
+    const testHtml = r.testDesc ? `<div class="test-desc"><b>Bài test:</b> ${escapeHtml(r.testDesc)}</div>` : '';
+    let statusHtml, actionHtml;
+    if(!ready){
+      statusHtml = `<div class="rank-status locked">Chưa đủ điều kiện XP</div>`;
+      actionHtml = '';
+    } else {
+      statusHtml = `<div class="rank-status ready">✓ Đủ điều kiện làm test</div>`;
+      actionHtml = `<button class="btn-primary" style="flex:1;" onclick="completeRank('${r.id}')">✓ Đã hoàn thành</button>`;
+    }
+    return `<div class="rank-card ${ready?'ready':''}">
+      <div class="rank-top">
+        <span class="rank-name">${escapeHtml(r.name)}</span>
+        <button class="btn-del" onclick="deleteRank('${r.id}')" title="Xóa danh hiệu">✕</button>
+      </div>
+      ${reqHtml}
+      ${testHtml}
+      ${statusHtml}
+      <div class="rank-actions">${actionHtml}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ---------- Log & totals ---------- */
+function renderLog(){
+  const el = document.getElementById('logList');
+  if(state.log.length === 0){
+    el.innerHTML = `<div class="empty-log">Chưa có hoạt động nào hôm nay. Bấm "+1 lần" ở một bài tập để bắt đầu.</div>`;
+    return;
+  }
+  el.innerHTML = state.log.slice().reverse().slice(0,50).map(item=>{
+    return `<div class="log-item">
+      <span class="lname">${escapeHtml(item.name)}</span>
+      <span class="lcalo">+${item.calo} kcal</span>
+      <span class="ltime">${item.time}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderTotalCalo(){
+  document.getElementById('totalCalo').textContent = Math.round(state.totalCalo * 10) / 10;
+}
+
+function render(){
+  renderBodyMap();
+  renderStatList();
+  renderExercises();
+  renderRanks();
+  renderLog();
+  renderTotalCalo();
+}
+
+/* ---------- Export / Import ---------- */
+function openExportModal(){
+  document.getElementById('modalTitle').textContent = 'Xuất dữ liệu';
+  document.getElementById('modalDesc').textContent = 'Copy toàn bộ đoạn text bên dưới, gửi qua thiết bị kia (Zalo/Note/Mail...), rồi dán vào mục "Nhập dữ liệu" ở thiết bị đó.';
+  const ta = document.getElementById('modalTextarea');
+  ta.value = JSON.stringify(state);
+  ta.readOnly = true;
+  const btn = document.getElementById('modalActionBtn');
+  btn.textContent = 'Copy';
+  btn.onclick = async ()=>{
+    ta.select();
+    try{
+      await navigator.clipboard.writeText(ta.value);
+      showToast('Đã copy — dán qua thiết bị kia nhé');
+    }catch(e){
+      document.execCommand('copy');
+      showToast('Đã copy — dán qua thiết bị kia nhé');
+    }
+  };
+  document.getElementById('modalOverlay').classList.add('show');
+}
+
+function openImportModal(){
+  document.getElementById('modalTitle').textContent = 'Nhập dữ liệu';
+  document.getElementById('modalDesc').textContent = 'Dán đoạn text đã xuất từ thiết bị kia vào đây, rồi bấm "Nhập". Dữ liệu hiện tại sẽ bị ghi đè.';
+  const ta = document.getElementById('modalTextarea');
+  ta.value = '';
+  ta.readOnly = false;
+  ta.placeholder = 'Dán dữ liệu vào đây...';
+  const btn = document.getElementById('modalActionBtn');
+  btn.textContent = 'Nhập';
+  btn.onclick = async ()=>{
+    try{
+      const parsed = JSON.parse(ta.value.trim());
+      if(!parsed || typeof parsed !== 'object') throw new Error('invalid');
+      state = Object.assign({
+        exercises: defaultExercises,
+        stats: {vai:0, nguc:0, tay:0, mong:0, chan:0, core:0, lung:0, nhanhnhen:0, tim:0, phoi:0},
+        totalCalo: 0, log: [], ranks: []
+      }, parsed);
+      state.stats = Object.assign({vai:0, nguc:0, tay:0, mong:0, chan:0, core:0, lung:0, nhanhnhen:0, tim:0, phoi:0}, state.stats || {});
+      if(!Array.isArray(state.ranks)) state.ranks = [];
+      render();
+      await saveState();
+      closeModal();
+      showToast('Đã nhập dữ liệu thành công');
+    }catch(e){
+      showToast('Dữ liệu không hợp lệ, kiểm tra lại đoạn đã copy');
+    }
+  };
+  document.getElementById('modalOverlay').classList.add('show');
+}
+
+function closeModal(){
+  document.getElementById('modalOverlay').classList.remove('show');
+}
+
+async function resetAll(){
+  if(!confirm('Xóa toàn bộ chỉ số, bài tập, danh hiệu và nhật ký? Hành động này không thể hoàn tác.')) return;
+  state = {
+    exercises: defaultExercises.map(e=> ({...e, count:0})),
+    stats: {vai:0, nguc:0, tay:0, mong:0, chan:0, core:0, lung:0, nhanhnhen:0, tim:0, phoi:0},
+    totalCalo: 0,
+    log: [],
+    ranks: []
+  };
+  render();
+  await saveState();
+  showToast('Đã đặt lại dữ liệu');
+}
+
+loadState();
+</script>
+</body>
+</html>
