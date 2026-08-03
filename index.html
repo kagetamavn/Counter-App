@@ -42,7 +42,7 @@ body{
     min-height:100vh;
     padding: 28px 16px 60px;
   }
-  .wrap{max-width: 920px; margin:0 auto;}
+  .wrap{max-width: 960px; margin:0 auto;}
 
   /* ---------- Header ---------- */
   .hdr{display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:22px; flex-wrap:wrap; gap:12px;}
@@ -57,14 +57,65 @@ body{
     color:var(--text);
   }
   h1 span{color:var(--gold);}
-  .calo-total{
-    text-align:right;
-    font-family:'JetBrains Mono', monospace;
-  }
-  .calo-total .num{font-size:30px; font-weight:700; color:var(--ember);}
+  .calo-total{text-align:right; font-family:'JetBrains Mono', monospace;}
+  .calo-total .num{font-size:26px; font-weight:700; color:var(--ember); white-space:nowrap;}
   .calo-total .lbl{font-size:11px; letter-spacing:.12em; color:var(--text-muted); text-transform:uppercase;}
+  .sync-btn{
+    display:flex; align-items:center; gap:6px;
+    background:var(--surface); border:1px solid var(--border); border-radius:20px;
+    padding:6px 14px; font-family:'JetBrains Mono', monospace; font-size:11px;
+    color:var(--text-muted); cursor:pointer; white-space:nowrap;
+  }
+  .sync-btn:hover{border-color:var(--gold-dim); color:var(--gold);}
+  .sync-btn.active{color:var(--gold); border-color:var(--gold-dim);}
 
-  /* ---------- Body Map (signature element) ---------- */
+  /* ---------- Sections ---------- */
+  .section-title{
+    font-family:'Barlow Condensed', sans-serif;
+    font-weight:700;
+    font-size:20px;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    margin-bottom:12px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .section-title .idx{color:var(--text-dim); font-family:'JetBrains Mono', monospace; font-size:13px; font-weight:400;}
+
+  /* ---------- Profile ---------- */
+  .profile-section{
+    background: var(--surface);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding: 22px;
+    margin-bottom:24px;
+  }
+  .featured-title-row{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:18px;}
+  .featured-title-box{
+    display:flex; align-items:center; gap:10px;
+    font-family:'Barlow Condensed', sans-serif;
+    font-size:22px; font-weight:700; text-transform:uppercase; letter-spacing:.02em;
+    color:var(--text-dim);
+  }
+  .featured-title-box.set{color:var(--gold);}
+  .featured-title-box .icon{font-size:20px;}
+  select#featuredSelect{
+    max-width:260px;
+    background:var(--surface-raised); border:1px solid var(--border); border-radius:8px;
+    color:var(--text); font-family:'Inter',sans-serif; font-size:13px; padding:8px 10px; outline:none;
+  }
+  .radar-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:20px;
+  }
+  @media(max-width:600px){ .radar-grid{grid-template-columns:1fr;} }
+  .radar-box{text-align:center;}
+  .radar-box .radar-title{
+    font-family:'Barlow Condensed', sans-serif; font-weight:600; font-size:15px;
+    text-transform:uppercase; letter-spacing:.05em; color:var(--text-muted); margin-bottom:8px;
+  }
+
+  /* ---------- Body Map ---------- */
   .bodymap-section{
     background: var(--surface);
     border:1px solid var(--border);
@@ -107,18 +158,6 @@ body{
   .bar-track{height:5px; background:var(--border-soft); border-radius:3px; overflow:hidden;}
   .bar-fill{height:100%; background: linear-gradient(90deg, var(--gold-dim), var(--gold)); border-radius:3px; transition: width .5s ease;}
   .stat-row .xp-sub{font-family:'JetBrains Mono', monospace; font-size:9.5px; color:var(--text-dim); margin-top:2px;}
-
-  /* ---------- Sections ---------- */
-  .section-title{
-    font-family:'Barlow Condensed', sans-serif;
-    font-weight:700;
-    font-size:20px;
-    text-transform:uppercase;
-    letter-spacing:.03em;
-    margin-bottom:12px;
-    display:flex; align-items:center; gap:10px;
-  }
-  .section-title .idx{color:var(--text-dim); font-family:'JetBrains Mono', monospace; font-size:13px; font-weight:400;}
 
   /* ---------- Exercise cards ---------- */
   .ex-grid{
@@ -222,6 +261,8 @@ body{
   }
   .xp-input-group label{color:var(--text-dim);}
   .xp-input-group input{text-align:center; font-family:'JetBrains Mono', monospace;}
+  .calo-range-row{display:flex; gap:10px; max-width:320px;}
+  .calo-range-row .form-row{flex:1; margin-bottom:0;}
   .form-footer{display:flex; justify-content:space-between; align-items:center; margin-top:16px; flex-wrap:wrap; gap:10px;}
   .btn-primary{
     background:var(--gold);
@@ -271,24 +312,31 @@ body{
   .log-item .lcalo{color:var(--ember);}
   .empty-log{color:var(--text-dim); font-size:12.5px; padding:16px 0; text-align:center; font-family:'Inter',sans-serif;}
 
-  /* ---------- Rank up ---------- */
-  .badge-shelf{
-    display:flex; flex-wrap:wrap; gap:10px;
-    margin-bottom:16px;
-  }
+  /* ---------- Rank / Achievement shared ---------- */
+  .badge-shelf{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px;}
   .badge-item{
     display:flex; align-items:center; gap:8px;
     background: linear-gradient(135deg, rgba(227,179,65,0.14), rgba(227,179,65,0.04));
     border:1px solid var(--gold-dim);
     border-radius:30px;
-    padding:7px 16px 7px 12px;
+    padding:7px 8px 7px 14px;
     font-family:'Barlow Condensed', sans-serif;
     font-weight:600;
     font-size:15px;
     letter-spacing:.02em;
     color:var(--gold);
   }
+  .badge-item.ach{
+    background: linear-gradient(135deg, rgba(140,124,224,0.16), rgba(140,124,224,0.04));
+    border-color:var(--violet-dim);
+    color:var(--violet);
+  }
   .badge-item .trophy{font-size:14px;}
+  .badge-del{
+    background:transparent; border:none; color:inherit; opacity:.55;
+    width:22px; height:22px; border-radius:50%; cursor:pointer; font-size:12px; line-height:1;
+  }
+  .badge-del:hover{opacity:1; background:rgba(255,255,255,0.08);}
   .rank-grid{
     display:grid;
     grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
@@ -313,29 +361,16 @@ body{
   .req-bar-fill{height:100%; background: linear-gradient(90deg, var(--violet-dim), var(--violet)); border-radius:3px;}
   .req-bar-fill.done{background: linear-gradient(90deg, var(--gold-dim), var(--gold));}
   .test-desc{
-    font-size:12.5px;
-    color:var(--text-muted);
-    background:var(--surface-raised);
-    border:1px solid var(--border-soft);
-    border-radius:8px;
-    padding:8px 10px;
-    line-height:1.4;
+    font-size:12.5px; color:var(--text-muted);
+    background:var(--surface-raised); border:1px solid var(--border-soft); border-radius:8px;
+    padding:8px 10px; line-height:1.4;
   }
   .test-desc b{color:var(--text); font-weight:600;}
-  .rank-status{
-    font-family:'JetBrains Mono', monospace;
-    font-size:10.5px;
-    letter-spacing:.05em;
-    text-transform:uppercase;
-    padding:4px 0;
-  }
+  .rank-status{font-family:'JetBrains Mono', monospace; font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; padding:4px 0;}
   .rank-status.locked{color:var(--text-dim);}
   .rank-status.ready{color:var(--violet);}
-  .rank-status.done{color:var(--gold);}
   .rank-actions{display:flex; gap:8px;}
-  .req-row{
-    display:flex; gap:8px; margin-bottom:8px; align-items:center;
-  }
+  .req-row{display:flex; gap:8px; margin-bottom:8px; align-items:center;}
   .req-row select{flex:1.3;}
   .req-row input{flex:1; text-align:center; font-family:'JetBrains Mono', monospace;}
   .req-row .btn-del{width:34px; height:34px; font-size:13px;}
@@ -346,15 +381,11 @@ body{
   .footer-actions{display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap; margin-top:18px;}
 
   .modal-overlay{
-    display:none;
-    position:fixed; inset:0; background:rgba(10,11,13,0.75);
+    display:none; position:fixed; inset:0; background:rgba(10,11,13,0.75);
     align-items:center; justify-content:center; z-index:100; padding:20px;
   }
   .modal-overlay.show{display:flex;}
-  .modal-box{
-    background:var(--surface); border:1px solid var(--border); border-radius:14px;
-    padding:22px; max-width:480px; width:100%;
-  }
+  .modal-box{background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:22px; max-width:480px; width:100%;}
   .modal-title{font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:20px; text-transform:uppercase; letter-spacing:.03em; margin-bottom:8px;}
   .modal-desc{font-size:13px; color:var(--text-muted); margin-bottom:12px; line-height:1.5;}
   .modal-textarea{
@@ -364,7 +395,7 @@ body{
     padding:10px 12px; outline:none;
   }
   .modal-textarea:focus{border-color:var(--gold);}
-  .modal-actions{display:flex; justify-content:flex-end; gap:10px; margin-top:14px;}
+  .modal-actions{display:flex; justify-content:flex-end; gap:10px; margin-top:14px; flex-wrap:wrap;}
 
   .toast{
     position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
@@ -375,14 +406,6 @@ body{
     z-index:50; max-width:90vw; text-align:center;
   }
   .toast.show{opacity:1; transform:translateX(-50%) translateY(-6px);}
-  .sync-btn{
-    display:flex; align-items:center; gap:6px;
-    background:var(--surface); border:1px solid var(--border); border-radius:20px;
-    padding:6px 14px; font-family:'JetBrains Mono', monospace; font-size:11px;
-    color:var(--text-muted); cursor:pointer; white-space:nowrap;
-  }
-  .sync-btn:hover{border-color:var(--gold-dim); color:var(--gold);}
-  .sync-btn.active{color:var(--gold); border-color:var(--gold-dim);}
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
@@ -399,7 +422,26 @@ body{
       <button class="sync-btn" id="syncStatus" onclick="openSyncModal()">💾 Chỉ máy này</button>
       <div class="calo-total">
         <div class="num" id="totalCalo">0</div>
-        <div class="lbl">kcal đã đốt</div>
+        <div class="lbl">kcal đã đốt (ước tính)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="section-title"><span class="idx">00</span> Hồ sơ</div>
+  <div class="profile-section">
+    <div class="featured-title-row">
+      <div class="featured-title-box" id="featuredTitleDisplay"><span class="icon">🎖️</span>Chưa chọn danh hiệu</div>
+      <select id="featuredSelect" onchange="setFeaturedTitle(this.value)"></select>
+    </div>
+    <div class="radar-grid">
+      <div class="radar-box">
+        <div class="radar-title">Nhóm Cơ Bắp</div>
+        <div id="radarMuscle"></div>
+      </div>
+      <div class="radar-box">
+        <div class="radar-title">Nhóm Thể Lực</div>
+        <div id="radarPerf"></div>
       </div>
     </div>
   </div>
@@ -435,7 +477,6 @@ body{
         <g id="node-chan"><circle class="node-pulse" cx="150" cy="390" r="9"/><circle class="node-dot" cx="150" cy="390" r="11"/><text class="node-lvl" x="150" y="391">1</text></g>
         <g id="node-nhanhnhen"><circle class="node-pulse" cx="150" cy="440" r="9"/><circle class="node-dot" cx="150" cy="440" r="11"/><text class="node-lvl" x="150" y="441">1</text></g>
       </svg>
-
       <div class="stat-list" id="statList"></div>
     </div>
   </div>
@@ -455,19 +496,22 @@ body{
       <label>XP cộng vào từng bộ phận (mỗi lần bấm +1)</label>
       <div class="xp-grid" id="xpGridForm"></div>
     </div>
-    <div class="form-row" style="max-width:180px;">
-      <label for="exCalo">Calo đốt / lần</label>
-      <input type="number" id="exCalo" value="0" min="0" step="0.5">
+    <div class="form-row">
+      <label>Calo đốt / lần (khoảng ước tính)</label>
+      <div class="calo-range-row">
+        <div class="form-row"><input type="number" id="exCaloMin" value="0" min="0" step="0.5" placeholder="Tối thiểu"></div>
+        <div class="form-row"><input type="number" id="exCaloMax" value="0" min="0" step="0.5" placeholder="Tối đa"></div>
+      </div>
     </div>
     <div class="form-footer">
       <button class="btn-primary" onclick="addExercise()">+ Thêm bài tập</button>
-      <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim);">VD: Push up → Ngực +1, Vai +1, Tay +1, Calo 5</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim);">VD: Push up → Ngực +1, Vai +1, Tay +1, Calo 8~12</span>
     </div>
   </div>
 
   <!-- RANK UP -->
   <div class="section-title"><span class="idx">03</span> Rank Up</div>
-  <div class="badge-shelf" id="badgeShelf"></div>
+  <div class="badge-shelf" id="rankBadgeShelf"></div>
   <div class="rank-grid" id="rankGrid"></div>
 
   <div class="section-title"><span class="idx">04</span> Tạo danh hiệu / rank mới</div>
@@ -479,7 +523,7 @@ body{
     <div class="form-row">
       <label>Điều kiện XP để đủ tư cách làm test</label>
       <div id="reqRows"></div>
-      <button class="btn-ghost" type="button" onclick="addReqRow()">+ Thêm điều kiện</button>
+      <button class="btn-ghost" type="button" onclick="addReqRow('reqRows')">+ Thêm điều kiện</button>
     </div>
     <div class="form-row">
       <label for="rankTest">Mô tả bài test (tùy chọn — tự xác nhận khi hoàn thành)</label>
@@ -487,12 +531,34 @@ body{
     </div>
     <div class="form-footer">
       <button class="btn-primary" onclick="addRank()">+ Thêm danh hiệu</button>
-      <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim);">VD: Sky Walker — cần 500 XP Chân → đủ điều kiện làm test</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim);">VD: Sky Walker I — 500 XP Chân · Sky Walker II — 500 XP Chân + test nhảy 1m55</span>
+    </div>
+  </div>
+
+  <!-- ACHIEVEMENTS -->
+  <div class="section-title"><span class="idx">05</span> Achievement</div>
+  <div class="badge-shelf" id="achBadgeShelf"></div>
+  <div class="rank-grid" id="achGrid"></div>
+
+  <div class="section-title"><span class="idx">06</span> Tạo thành tựu mới</div>
+  <div class="form-card">
+    <div class="form-row">
+      <label for="achName">Tên thành tựu</label>
+      <input type="text" id="achName" placeholder="VD: Iron Core">
+    </div>
+    <div class="form-row">
+      <label>Điều kiện XP (tự động đạt khi đủ, không cần test)</label>
+      <div id="achReqRows"></div>
+      <button class="btn-ghost" type="button" onclick="addReqRow('achReqRows')">+ Thêm điều kiện</button>
+    </div>
+    <div class="form-footer">
+      <button class="btn-primary" onclick="addAchievement()">+ Thêm thành tựu</button>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim);">Tự động mở khóa ngay khi đủ XP, không cần xác nhận</span>
     </div>
   </div>
 
   <!-- LOG -->
-  <div class="section-title"><span class="idx">05</span> Nhật ký hôm nay</div>
+  <div class="section-title"><span class="idx">07</span> Nhật ký hôm nay</div>
   <div class="log-list" id="logList"></div>
   <div class="footer-actions">
     <button class="btn-ghost" onclick="openExportModal()">⇧ Xuất dữ liệu</button>
@@ -535,22 +601,32 @@ const PART_LABELS = {
   vai:'Vai', nguc:'Ngực', tay:'Tay', mong:'Mông', chan:'Chân',
   core:'Core', lung:'Lưng', nhanhnhen:'Nhanh nhẹn', tim:'Tim', phoi:'Phổi'
 };
-const XP_PER_LEVEL = 20;
+const GROUP_MUSCLE = ['tay','chan','vai','lung','nguc'];
+const GROUP_PERF = ['core','tim','phoi','nhanhnhen','mong'];
+const XP_PER_LEVEL = 100;
+const RADAR_MAX = 500;
 
 let state = {
   exercises: [],
   stats: {vai:0, nguc:0, tay:0, mong:0, chan:0, core:0, lung:0, nhanhnhen:0, tim:0, phoi:0},
-  totalCalo: 0,
+  totalCaloMin: 0,
+  totalCaloMax: 0,
   log: [],
-  ranks: []
+  ranks: [],
+  achievements: [],
+  profile: { featuredType: null, featuredId: null }
 };
 
 const defaultExercises = [
-  {id:'push-up', name:'Push up', xp:{vai:1,nguc:1,tay:1}, calo:5, count:0},
-  {id:'squat', name:'Squat', xp:{mong:1,chan:1,core:1}, calo:6, count:0},
-  {id:'plank-30s', name:'Plank (30s)', xp:{core:1,lung:1}, calo:3, count:0},
-  {id:'lunge', name:'Lunge', xp:{mong:1,chan:1,nhanhnhen:1}, calo:4, count:0},
+  {id:'push-up', name:'Push up', xp:{vai:1,nguc:1,tay:1}, caloMin:8, caloMax:12, count:0},
+  {id:'squat', name:'Squat', xp:{mong:1,chan:1,core:1}, caloMin:8, caloMax:12, count:0},
+  {id:'plank-30s', name:'Plank (30s)', xp:{core:1,lung:1}, caloMin:4, caloMax:6, count:0},
+  {id:'lunge', name:'Lunge', xp:{mong:1,chan:1,nhanhnhen:1}, caloMin:6, caloMax:9, count:0},
 ];
+
+function defaultStats(){
+  return {vai:0, nguc:0, tay:0, mong:0, chan:0, core:0, lung:0, nhanhnhen:0, tim:0, phoi:0};
+}
 
 /* Dùng window.storage khi mở dưới dạng artifact trong Claude.
    Nếu không có (vd: mở file .html tải về bằng trình duyệt riêng),
@@ -560,16 +636,12 @@ const hasClaudeStorage = (typeof window.storage !== 'undefined' && window.storag
 
 const storageAdapter = {
   async get(key){
-    if(hasClaudeStorage){
-      return await window.storage.get(key, false);
-    }
+    if(hasClaudeStorage){ return await window.storage.get(key, false); }
     const raw = localStorage.getItem(key);
     return raw ? {key, value: raw, shared:false} : null;
   },
   async set(key, value){
-    if(hasClaudeStorage){
-      return await window.storage.set(key, value, false);
-    }
+    if(hasClaudeStorage){ return await window.storage.set(key, value, false); }
     localStorage.setItem(key, value);
     return {key, value, shared:false};
   }
@@ -587,41 +659,28 @@ const FIREBASE_CONFIG = {
 let firebaseApp = null, db = null, unsubscribeSnapshot = null, syncSuppress = false;
 let syncCode = localStorage.getItem('fitness-sync-code') || '';
 
-function defaultStats(){
-  return {vai:0, nguc:0, tay:0, mong:0, chan:0, core:0, lung:0, nhanhnhen:0, tim:0, phoi:0};
-}
-
 function initFirebase(){
   if(firebaseApp) return true;
   try{
     firebaseApp = firebase.initializeApp(FIREBASE_CONFIG);
     db = firebase.firestore();
     return true;
-  }catch(e){
-    console.error('Firebase init lỗi', e);
-    return false;
-  }
+  }catch(e){ console.error('Firebase init lỗi', e); return false; }
 }
 
 function updateSyncIndicator(connected){
   const el = document.getElementById('syncStatus');
   if(!el) return;
-  if(!syncCode){
-    el.textContent = '💾 Chỉ máy này';
-    el.classList.remove('active');
-  } else {
-    el.textContent = connected === false ? ('⚠ Mất kết nối · ' + syncCode) : ('🔗 ' + syncCode);
-    el.classList.add('active');
-  }
+  if(!syncCode){ el.textContent = '💾 Chỉ máy này'; el.classList.remove('active'); return; }
+  el.textContent = connected === false ? ('⚠ Mất kết nối · ' + syncCode) : ('🔗 ' + syncCode);
+  el.classList.add('active');
 }
 
 function openSyncModal(){
   document.getElementById('syncCodeInput').value = syncCode;
   document.getElementById('syncModalOverlay').classList.add('show');
 }
-function closeSyncModal(){
-  document.getElementById('syncModalOverlay').classList.remove('show');
-}
+function closeSyncModal(){ document.getElementById('syncModalOverlay').classList.remove('show'); }
 
 async function applySyncCode(){
   const val = document.getElementById('syncCodeInput').value.trim();
@@ -642,15 +701,32 @@ async function disableSync(){
   showToast('Đã tắt đồng bộ — chỉ lưu trên máy này');
 }
 
+function normalizeState(){
+  state.stats = Object.assign(defaultStats(), state.stats || {});
+  if(!Array.isArray(state.ranks)) state.ranks = [];
+  if(!Array.isArray(state.achievements)) state.achievements = [];
+  if(!Array.isArray(state.exercises) || state.exercises.length===0) state.exercises = state.exercises && state.exercises.length ? state.exercises : defaultExercises;
+  if(!Array.isArray(state.log)) state.log = [];
+  if(!state.profile) state.profile = { featuredType: null, featuredId: null };
+  if(typeof state.totalCaloMin !== 'number' || typeof state.totalCaloMax !== 'number'){
+    const old = state.totalCalo || 0;
+    state.totalCaloMin = old; state.totalCaloMax = old;
+  }
+  state.exercises.forEach(ex=>{
+    if(typeof ex.caloMin !== 'number' || typeof ex.caloMax !== 'number'){
+      const old = typeof ex.calo === 'number' ? ex.calo : 0;
+      ex.caloMin = old; ex.caloMax = old;
+    }
+  });
+}
+
 function mergeRemoteState(payloadStr){
   try{
     const parsed = JSON.parse(payloadStr);
     syncSuppress = true;
     state = Object.assign(state, parsed);
-    state.stats = Object.assign(defaultStats(), state.stats || {});
-    if(!Array.isArray(state.ranks)) state.ranks = [];
-    if(!Array.isArray(state.exercises)) state.exercises = defaultExercises;
-    if(!Array.isArray(state.log)) state.log = [];
+    normalizeState();
+    checkAchievements();
     render();
     syncSuppress = false;
   }catch(e){ console.error('Lỗi hợp nhất dữ liệu đồng bộ', e); syncSuppress = false; }
@@ -663,11 +739,8 @@ async function connectSync(){
   const docRef = db.collection('fitness_sync').doc(syncCode);
   try{
     const snap = await docRef.get();
-    if(snap.exists && snap.data().payload){
-      mergeRemoteState(snap.data().payload);
-    } else {
-      await docRef.set({ payload: JSON.stringify(state), updatedAt: Date.now() });
-    }
+    if(snap.exists && snap.data().payload){ mergeRemoteState(snap.data().payload); }
+    else { await docRef.set({ payload: JSON.stringify(state), updatedAt: Date.now() }); }
     updateSyncIndicator(true);
   }catch(e){
     console.error('Lỗi kết nối đồng bộ', e);
@@ -675,7 +748,6 @@ async function connectSync(){
     showToast('Không kết nối được — kiểm tra mạng hoặc cấu hình Firestore');
     return;
   }
-
   unsubscribeSnapshot = docRef.onSnapshot(
     doc=>{
       if(!doc.exists || syncSuppress) return;
@@ -689,11 +761,8 @@ async function connectSync(){
 
 async function pushSync(){
   if(!syncCode || !db) return;
-  try{
-    await db.collection('fitness_sync').doc(syncCode).set({
-      payload: JSON.stringify(state), updatedAt: Date.now()
-    });
-  }catch(e){ console.error('Lỗi đẩy dữ liệu lên đồng bộ', e); }
+  try{ await db.collection('fitness_sync').doc(syncCode).set({ payload: JSON.stringify(state), updatedAt: Date.now() }); }
+  catch(e){ console.error('Lỗi đẩy dữ liệu lên đồng bộ', e); }
 }
 
 async function loadState(){
@@ -702,26 +771,27 @@ async function loadState(){
     if(res && res.value){
       const parsed = JSON.parse(res.value);
       state = Object.assign(state, parsed);
-      state.stats = Object.assign(defaultStats(), state.stats || {});
-      if(!Array.isArray(state.ranks)) state.ranks = [];
     } else {
       state.exercises = defaultExercises;
-      await saveState();
     }
   }catch(e){
     console.error('Lỗi tải dữ liệu', e);
     state.exercises = defaultExercises;
   }
+  normalizeState();
+  await saveState();
   buildXpForm();
+  addReqRow('reqRows');
+  addReqRow('achReqRows');
+  checkAchievements();
   render();
   updateSyncIndicator();
   if(syncCode) await connectSync();
 }
 
 async function saveState(){
-  try{
-    await storageAdapter.set(STORAGE_KEY, JSON.stringify(state));
-  }catch(e){ console.error('Lỗi lưu dữ liệu', e); }
+  try{ await storageAdapter.set(STORAGE_KEY, JSON.stringify(state)); }
+  catch(e){ console.error('Lỗi lưu dữ liệu', e); }
   if(!syncSuppress) await pushSync();
 }
 
@@ -737,13 +807,17 @@ function showToast(msg){
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(t._timer);
-  t._timer = setTimeout(()=> t.classList.remove('show'), 1800);
+  t._timer = setTimeout(()=> t.classList.remove('show'), 1900);
 }
 
 function escapeHtml(str){
   const d = document.createElement('div');
   d.textContent = str;
   return d.innerHTML;
+}
+
+function caloText(min, max){
+  return min === max ? `${min}` : `${min}~${max}`;
 }
 
 function buildXpForm(){
@@ -765,13 +839,9 @@ function renderBodyMap(){
     const pulse = node.querySelector('.node-pulse');
     lvlText.textContent = level;
     if(level > 1){
-      dot.classList.add('lit');
-      lvlText.classList.remove('dim');
-      pulse.classList.add('animate');
+      dot.classList.add('lit'); lvlText.classList.remove('dim'); pulse.classList.add('animate');
     } else {
-      dot.classList.remove('lit');
-      lvlText.classList.add('dim');
-      pulse.classList.remove('animate');
+      dot.classList.remove('lit'); lvlText.classList.add('dim'); pulse.classList.remove('animate');
     }
   });
 }
@@ -782,14 +852,98 @@ function renderStatList(){
     const xp = state.stats[p] || 0;
     const {level, into, pct} = levelInfo(xp);
     return `<div class="stat-row">
-      <div class="top">
-        <span class="name">${PART_LABELS[p]}</span>
-        <span class="lvl">LV ${level}</span>
-      </div>
+      <div class="top"><span class="name">${PART_LABELS[p]}</span><span class="lvl">LV ${level}</span></div>
       <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
       <div class="xp-sub">${into} / ${XP_PER_LEVEL} XP · tổng ${xp} XP</div>
     </div>`;
   }).join('');
+}
+
+/* ---------- Profile: featured title + radar charts ---------- */
+function getAchievedTitles(){
+  const ranks = state.ranks.filter(r=> r.completed).map(r=> ({id:r.id, name:r.name, type:'rank'}));
+  const achs = state.achievements.filter(a=> a.completed).map(a=> ({id:a.id, name:a.name, type:'achievement'}));
+  return ranks.concat(achs);
+}
+
+function sortTitles(arr){
+  return arr.slice().sort((a,b)=> a.name.localeCompare(b.name, 'vi', {numeric:true, sensitivity:'base'}));
+}
+
+function setFeaturedTitle(val){
+  if(val === 'none'){ state.profile.featuredType = null; state.profile.featuredId = null; }
+  else{
+    const idx = val.indexOf('::');
+    state.profile.featuredType = val.slice(0, idx);
+    state.profile.featuredId = val.slice(idx+2);
+  }
+  renderProfile();
+  saveState();
+}
+
+function pentagonPoint(cx, cy, r, i, frac){
+  const angle = (-90 + i*72) * Math.PI / 180;
+  return [cx + r*frac*Math.cos(angle), cy + r*frac*Math.sin(angle)];
+}
+
+function buildRadarSVG(keys, color){
+  const cx=120, cy=120, R=88;
+  const fractions = keys.map(k=> Math.min(1, (state.stats[k]||0) / RADAR_MAX));
+  let gridPolys = '';
+  [0.25,0.5,0.75,1].forEach(f=>{
+    const pts = keys.map((_,i)=> pentagonPoint(cx,cy,R,i,f).join(',')).join(' ');
+    gridPolys += `<polygon points="${pts}" fill="none" stroke="#2E323B" stroke-width="1"/>`;
+  });
+  let axisLines = '';
+  keys.forEach((_,i)=>{
+    const [x,y] = pentagonPoint(cx,cy,R,i,1);
+    axisLines += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#2E323B" stroke-width="1"/>`;
+  });
+  const dataPts = keys.map((k,i)=> pentagonPoint(cx,cy,R,i,fractions[i]).join(',')).join(' ');
+  let dots = '';
+  keys.forEach((k,i)=>{
+    const [x,y] = pentagonPoint(cx,cy,R,i,fractions[i]);
+    dots += `<circle cx="${x}" cy="${y}" r="4" fill="${color}" stroke="#14161A" stroke-width="1.5"/>`;
+  });
+  let labels = '';
+  keys.forEach((k,i)=>{
+    const [x,y] = pentagonPoint(cx,cy,R,i,1.30);
+    let anchor='middle', dy=0;
+    if(x < cx - 8) anchor='end'; else if(x > cx + 8) anchor='start';
+    if(y < cy - 8) dy=-2; else if(y > cy + 8) dy=12;
+    const lvl = levelInfo(state.stats[k]||0).level;
+    labels += `<text x="${x}" y="${y+dy}" text-anchor="${anchor}" style="font-family:'Barlow Condensed',sans-serif; text-transform:uppercase;" font-size="12.5" font-weight="600" fill="#EDEAE3">${PART_LABELS[k]}</text>`;
+    labels += `<text x="${x}" y="${y+dy+13}" text-anchor="${anchor}" style="font-family:'JetBrains Mono',monospace;" font-size="10" fill="${color}">LV ${lvl}</text>`;
+  });
+  return `<svg viewBox="0 0 240 260" style="width:100%; max-width:280px; display:block; margin:0 auto;">
+    ${gridPolys}${axisLines}
+    <polygon points="${dataPts}" fill="${color}26" stroke="${color}" stroke-width="2"/>
+    ${dots}${labels}
+  </svg>`;
+}
+
+function renderProfile(){
+  const list = getAchievedTitles();
+  const sel = document.getElementById('featuredSelect');
+  sel.innerHTML = `<option value="none">— Không hiển thị —</option>` + list.map(t=>
+    `<option value="${t.type}::${t.id}" ${(state.profile.featuredType===t.type && state.profile.featuredId===t.id)?'selected':''}>${t.type==='rank'?'🏆':'⭐'} ${escapeHtml(t.name)}</option>`
+  ).join('');
+
+  const disp = document.getElementById('featuredTitleDisplay');
+  let found = null;
+  if(state.profile.featuredType && state.profile.featuredId){
+    found = list.find(t=> t.type===state.profile.featuredType && t.id===state.profile.featuredId);
+  }
+  if(found){
+    disp.innerHTML = `<span class="icon">${found.type==='rank'?'🏆':'⭐'}</span>${escapeHtml(found.name)}`;
+    disp.classList.add('set');
+  } else {
+    disp.innerHTML = `<span class="icon">🎖️</span>Chưa chọn danh hiệu`;
+    disp.classList.remove('set');
+  }
+
+  document.getElementById('radarMuscle').innerHTML = buildRadarSVG(GROUP_MUSCLE, '#E3B341');
+  document.getElementById('radarPerf').innerHTML = buildRadarSVG(GROUP_PERF, '#8C7CE0');
 }
 
 /* ---------- Exercises ---------- */
@@ -800,12 +954,10 @@ function renderExercises(){
     return;
   }
   el.innerHTML = state.exercises.map(ex=>{
-    const tags = PARTS.filter(p=> ex.xp[p] > 0).map(p=>
-      `<span class="tag">${PART_LABELS[p]} +${ex.xp[p]}</span>`
-    ).join('');
+    const tags = PARTS.filter(p=> ex.xp[p] > 0).map(p=> `<span class="tag">${PART_LABELS[p]} +${ex.xp[p]}</span>`).join('');
     return `<div class="ex-card">
       <div class="ex-name">${escapeHtml(ex.name)}</div>
-      <div class="ex-tags">${tags}<span class="tag calo">🔥 ${ex.calo} kcal</span></div>
+      <div class="ex-tags">${tags}<span class="tag calo">🔥 ${caloText(ex.caloMin, ex.caloMax)} kcal</span></div>
       <div class="ex-count">Đã thực hiện: ${ex.count} lần</div>
       <div class="ex-actions">
         <button class="btn-plus" onclick="logExercise('${ex.id}')">+1 lần</button>
@@ -818,19 +970,18 @@ function renderExercises(){
 async function logExercise(id){
   const ex = state.exercises.find(e=> e.id === id);
   if(!ex) return;
-  PARTS.forEach(p=>{
-    state.stats[p] = (state.stats[p] || 0) + (ex.xp[p] || 0);
-  });
-  state.totalCalo += ex.calo;
+  PARTS.forEach(p=>{ state.stats[p] = (state.stats[p] || 0) + (ex.xp[p] || 0); });
+  state.totalCaloMin += ex.caloMin;
+  state.totalCaloMax += ex.caloMax;
   ex.count += 1;
   const now = new Date();
   state.log.push({
-    name: ex.name,
-    calo: ex.calo,
+    name: ex.name, caloMin: ex.caloMin, caloMax: ex.caloMax,
     time: now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0')
   });
+  checkAchievements();
   render();
-  showToast(`${ex.name} +${ex.calo} kcal`);
+  showToast(`${ex.name} +${caloText(ex.caloMin, ex.caloMax)} kcal`);
   await saveState();
 }
 
@@ -845,24 +996,25 @@ async function addExercise(){
   const name = nameInput.value.trim();
   if(!name){ showToast('Nhập tên bài tập trước đã'); return; }
   const xp = {};
-  PARTS.forEach(p=>{
-    xp[p] = Math.max(0, parseFloat(document.getElementById('xp-'+p).value) || 0);
-  });
-  const calo = Math.max(0, parseFloat(document.getElementById('exCalo').value) || 0);
+  PARTS.forEach(p=>{ xp[p] = Math.max(0, parseFloat(document.getElementById('xp-'+p).value) || 0); });
+  let caloMin = Math.max(0, parseFloat(document.getElementById('exCaloMin').value) || 0);
+  let caloMax = Math.max(0, parseFloat(document.getElementById('exCaloMax').value) || 0);
+  if(caloMax < caloMin) caloMax = caloMin;
   const id = name.toLowerCase().replace(/[^a-z0-9\u00c0-\u1ef9\s-]/gi,'').replace(/\s+/g,'-') + '-' + Date.now();
 
-  state.exercises.push({id, name, xp, calo, count:0});
+  state.exercises.push({id, name, xp, caloMin, caloMax, count:0});
   nameInput.value = '';
   PARTS.forEach(p=> document.getElementById('xp-'+p).value = 0);
-  document.getElementById('exCalo').value = 0;
+  document.getElementById('exCaloMin').value = 0;
+  document.getElementById('exCaloMax').value = 0;
   render();
   showToast('Đã thêm bài tập mới');
   await saveState();
 }
 
-/* ---------- Rank up ---------- */
+/* ---------- Requirement row builder (shared by rank & achievement forms) ---------- */
 let reqRowCounter = 0;
-function addReqRow(stat, xp){
+function addReqRow(containerId, stat, xp){
   reqRowCounter++;
   const rowId = 'req-row-' + reqRowCounter;
   const wrap = document.createElement('div');
@@ -871,34 +1023,37 @@ function addReqRow(stat, xp){
   const options = PARTS.map(p=> `<option value="${p}" ${p===stat?'selected':''}>${PART_LABELS[p]}</option>`).join('');
   wrap.innerHTML = `
     <select class="req-stat">${options}</select>
-    <input type="number" class="req-xp" min="1" value="${xp || 100}" placeholder="XP">
+    <input type="number" class="req-xp" min="1" value="${xp || 500}" placeholder="XP">
     <button type="button" class="btn-del" onclick="document.getElementById('${rowId}').remove()">✕</button>
   `;
-  document.getElementById('reqRows').appendChild(wrap);
+  document.getElementById(containerId).appendChild(wrap);
 }
 
-async function addRank(){
-  const nameInput = document.getElementById('rankName');
-  const name = nameInput.value.trim();
-  if(!name){ showToast('Nhập tên danh hiệu trước đã'); return; }
-  const rows = document.querySelectorAll('#reqRows .req-row');
+function readReqRows(containerId){
+  const rows = document.querySelectorAll('#' + containerId + ' .req-row');
   const requirements = [];
   rows.forEach(row=>{
     const stat = row.querySelector('.req-stat').value;
     const xp = Math.max(1, parseFloat(row.querySelector('.req-xp').value) || 0);
     if(xp > 0) requirements.push({stat, xp});
   });
+  return requirements;
+}
+
+/* ---------- Rank up ---------- */
+async function addRank(){
+  const nameInput = document.getElementById('rankName');
+  const name = nameInput.value.trim();
+  if(!name){ showToast('Nhập tên danh hiệu trước đã'); return; }
+  const requirements = readReqRows('reqRows');
   if(requirements.length === 0){ showToast('Thêm ít nhất 1 điều kiện XP'); return; }
   const testDesc = document.getElementById('rankTest').value.trim();
 
-  state.ranks.push({
-    id: 'rank-' + Date.now(),
-    name, requirements, testDesc,
-    completed:false
-  });
+  state.ranks.push({ id: 'rank-' + Date.now(), name, requirements, testDesc, completed:false });
   nameInput.value = '';
   document.getElementById('rankTest').value = '';
   document.getElementById('reqRows').innerHTML = '';
+  addReqRow('reqRows');
   render();
   showToast('Đã thêm danh hiệu mới');
   await saveState();
@@ -919,12 +1074,24 @@ async function completeRank(id){
   await saveState();
 }
 
+function renderRankReqHtml(requirements){
+  return requirements.map(req=>{
+    const cur = state.stats[req.stat] || 0;
+    const pct = Math.min(100, Math.round((cur / req.xp) * 100));
+    const done = cur >= req.xp;
+    return `<div class="req-item">
+      <div class="req-top"><span>${PART_LABELS[req.stat]}</span><span>${Math.min(cur,req.xp)}/${req.xp} XP</span></div>
+      <div class="req-bar-track"><div class="req-bar-fill ${done?'done':''}" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+}
+
 function renderRanks(){
-  const shelf = document.getElementById('badgeShelf');
-  const achieved = state.ranks.filter(r=> r.completed);
-  shelf.innerHTML = achieved.length === 0
-    ? ''
-    : achieved.map(r=> `<div class="badge-item"><span class="trophy">🏆</span>${escapeHtml(r.name)}</div>`).join('');
+  const shelf = document.getElementById('rankBadgeShelf');
+  const achieved = sortTitles(state.ranks.filter(r=> r.completed));
+  shelf.innerHTML = achieved.map(r=>
+    `<div class="badge-item"><span class="trophy">🏆</span>${escapeHtml(r.name)}<button class="badge-del" onclick="deleteRank('${r.id}')" title="Xóa">✕</button></div>`
+  ).join('');
 
   const grid = document.getElementById('rankGrid');
   const pending = state.ranks.filter(r=> !r.completed);
@@ -937,34 +1104,79 @@ function renderRanks(){
     return;
   }
   grid.innerHTML = pending.map(r=>{
-    const reqHtml = r.requirements.map(req=>{
-      const cur = state.stats[req.stat] || 0;
-      const pct = Math.min(100, Math.round((cur / req.xp) * 100));
-      const done = cur >= req.xp;
-      return `<div class="req-item">
-        <div class="req-top"><span>${PART_LABELS[req.stat]}</span><span>${Math.min(cur,req.xp)}/${req.xp} XP</span></div>
-        <div class="req-bar-track"><div class="req-bar-fill ${done?'done':''}" style="width:${pct}%"></div></div>
-      </div>`;
-    }).join('');
     const ready = r.requirements.every(req=> (state.stats[req.stat]||0) >= req.xp);
     const testHtml = r.testDesc ? `<div class="test-desc"><b>Bài test:</b> ${escapeHtml(r.testDesc)}</div>` : '';
-    let statusHtml, actionHtml;
-    if(!ready){
-      statusHtml = `<div class="rank-status locked">Chưa đủ điều kiện XP</div>`;
-      actionHtml = '';
-    } else {
-      statusHtml = `<div class="rank-status ready">✓ Đủ điều kiện làm test</div>`;
-      actionHtml = `<button class="btn-primary" style="flex:1;" onclick="completeRank('${r.id}')">✓ Đã hoàn thành</button>`;
-    }
+    const statusHtml = ready ? `<div class="rank-status ready">✓ Đủ điều kiện làm test</div>` : `<div class="rank-status locked">Chưa đủ điều kiện XP</div>`;
+    const actionHtml = ready ? `<button class="btn-primary" style="flex:1;" onclick="completeRank('${r.id}')">✓ Đã hoàn thành</button>` : '';
     return `<div class="rank-card ${ready?'ready':''}">
-      <div class="rank-top">
-        <span class="rank-name">${escapeHtml(r.name)}</span>
-        <button class="btn-del" onclick="deleteRank('${r.id}')" title="Xóa danh hiệu">✕</button>
-      </div>
-      ${reqHtml}
+      <div class="rank-top"><span class="rank-name">${escapeHtml(r.name)}</span>
+        <button class="btn-del" onclick="deleteRank('${r.id}')" title="Xóa danh hiệu">✕</button></div>
+      ${renderRankReqHtml(r.requirements)}
       ${testHtml}
       ${statusHtml}
       <div class="rank-actions">${actionHtml}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ---------- Achievements ---------- */
+async function addAchievement(){
+  const nameInput = document.getElementById('achName');
+  const name = nameInput.value.trim();
+  if(!name){ showToast('Nhập tên thành tựu trước đã'); return; }
+  const requirements = readReqRows('achReqRows');
+  if(requirements.length === 0){ showToast('Thêm ít nhất 1 điều kiện XP'); return; }
+
+  state.achievements.push({ id: 'ach-' + Date.now(), name, requirements, completed:false });
+  nameInput.value = '';
+  document.getElementById('achReqRows').innerHTML = '';
+  addReqRow('achReqRows');
+  checkAchievements();
+  render();
+  showToast('Đã thêm thành tựu mới');
+  await saveState();
+}
+
+async function deleteAchievement(id){
+  state.achievements = state.achievements.filter(a=> a.id !== id);
+  render();
+  await saveState();
+}
+
+function checkAchievements(){
+  let changed = false;
+  state.achievements.forEach(a=>{
+    if(!a.completed){
+      const met = a.requirements.every(req=> (state.stats[req.stat]||0) >= req.xp);
+      if(met){ a.completed = true; changed = true; showToast(`⭐ Đạt thành tựu "${a.name}"!`); }
+    }
+  });
+  return changed;
+}
+
+function renderAchievements(){
+  const shelf = document.getElementById('achBadgeShelf');
+  const achieved = sortTitles(state.achievements.filter(a=> a.completed));
+  shelf.innerHTML = achieved.map(a=>
+    `<div class="badge-item ach"><span class="trophy">⭐</span>${escapeHtml(a.name)}<button class="badge-del" onclick="deleteAchievement('${a.id}')" title="Xóa">✕</button></div>`
+  ).join('');
+
+  const grid = document.getElementById('achGrid');
+  const pending = state.achievements.filter(a=> !a.completed);
+  if(state.achievements.length === 0){
+    grid.innerHTML = `<div class="empty-log">Chưa có thành tựu nào. Tạo mới ở mục 06.</div>`;
+    return;
+  }
+  if(pending.length === 0){
+    grid.innerHTML = `<div class="empty-log">Đã hoàn thành tất cả thành tựu hiện có!</div>`;
+    return;
+  }
+  grid.innerHTML = pending.map(a=>{
+    return `<div class="rank-card">
+      <div class="rank-top"><span class="rank-name">${escapeHtml(a.name)}</span>
+        <button class="btn-del" onclick="deleteAchievement('${a.id}')" title="Xóa thành tựu">✕</button></div>
+      ${renderRankReqHtml(a.requirements)}
+      <div class="rank-status locked">Tự động đạt khi đủ XP</div>
     </div>`;
   }).join('');
 }
@@ -979,21 +1191,26 @@ function renderLog(){
   el.innerHTML = state.log.slice().reverse().slice(0,50).map(item=>{
     return `<div class="log-item">
       <span class="lname">${escapeHtml(item.name)}</span>
-      <span class="lcalo">+${item.calo} kcal</span>
+      <span class="lcalo">+${caloText(item.caloMin, item.caloMax)} kcal</span>
       <span class="ltime">${item.time}</span>
     </div>`;
   }).join('');
 }
 
 function renderTotalCalo(){
-  document.getElementById('totalCalo').textContent = Math.round(state.totalCalo * 10) / 10;
+  document.getElementById('totalCalo').textContent = caloText(
+    Math.round(state.totalCaloMin*10)/10,
+    Math.round(state.totalCaloMax*10)/10
+  );
 }
 
 function render(){
   renderBodyMap();
   renderStatList();
+  renderProfile();
   renderExercises();
   renderRanks();
+  renderAchievements();
   renderLog();
   renderTotalCalo();
 }
@@ -1009,13 +1226,8 @@ function openExportModal(){
   btn.textContent = 'Copy';
   btn.onclick = async ()=>{
     ta.select();
-    try{
-      await navigator.clipboard.writeText(ta.value);
-      showToast('Đã copy — dán qua thiết bị kia nhé');
-    }catch(e){
-      document.execCommand('copy');
-      showToast('Đã copy — dán qua thiết bị kia nhé');
-    }
+    try{ await navigator.clipboard.writeText(ta.value); showToast('Đã copy — dán qua thiết bị kia nhé'); }
+    catch(e){ document.execCommand('copy'); showToast('Đã copy — dán qua thiết bị kia nhé'); }
   };
   document.getElementById('modalOverlay').classList.add('show');
 }
@@ -1034,35 +1246,31 @@ function openImportModal(){
       const parsed = JSON.parse(ta.value.trim());
       if(!parsed || typeof parsed !== 'object') throw new Error('invalid');
       state = Object.assign({
-        exercises: defaultExercises,
-        stats: {vai:0, nguc:0, tay:0, mong:0, chan:0, core:0, lung:0, nhanhnhen:0, tim:0, phoi:0},
-        totalCalo: 0, log: [], ranks: []
+        exercises: defaultExercises, stats: defaultStats(),
+        totalCaloMin:0, totalCaloMax:0, log: [], ranks: [], achievements: [],
+        profile: { featuredType:null, featuredId:null }
       }, parsed);
-      state.stats = Object.assign({vai:0, nguc:0, tay:0, mong:0, chan:0, core:0, lung:0, nhanhnhen:0, tim:0, phoi:0}, state.stats || {});
-      if(!Array.isArray(state.ranks)) state.ranks = [];
+      normalizeState();
+      checkAchievements();
       render();
       await saveState();
       closeModal();
       showToast('Đã nhập dữ liệu thành công');
-    }catch(e){
-      showToast('Dữ liệu không hợp lệ, kiểm tra lại đoạn đã copy');
-    }
+    }catch(e){ showToast('Dữ liệu không hợp lệ, kiểm tra lại đoạn đã copy'); }
   };
   document.getElementById('modalOverlay').classList.add('show');
 }
 
-function closeModal(){
-  document.getElementById('modalOverlay').classList.remove('show');
-}
+function closeModal(){ document.getElementById('modalOverlay').classList.remove('show'); }
 
 async function resetAll(){
-  if(!confirm('Xóa toàn bộ chỉ số, bài tập, danh hiệu và nhật ký? Hành động này không thể hoàn tác.')) return;
+  if(!confirm('Xóa toàn bộ chỉ số, bài tập, danh hiệu, thành tựu và nhật ký? Hành động này không thể hoàn tác.')) return;
   state = {
     exercises: defaultExercises.map(e=> ({...e, count:0})),
-    stats: {vai:0, nguc:0, tay:0, mong:0, chan:0, core:0, lung:0, nhanhnhen:0, tim:0, phoi:0},
-    totalCalo: 0,
-    log: [],
-    ranks: []
+    stats: defaultStats(),
+    totalCaloMin: 0, totalCaloMax: 0,
+    log: [], ranks: [], achievements: [],
+    profile: { featuredType: null, featuredId: null }
   };
   render();
   await saveState();
