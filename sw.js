@@ -1,6 +1,6 @@
 const CACHE_NAME = 'stat-sheet-v1';
 const ASSETS = [
-  './fitness-tracker.html',
+  "./index.html",
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
