@@ -1,113 +1,140 @@
 <!DOCTYPE html>
 <html lang="vi">
-<link rel="manifest" href="manifest.json">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>STAT SHEET — Bộ đếm thể chất</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#35D2FF">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Stat Sheet">
+<link rel="icon" href="./icon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="./icon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #14161A;
-    --surface: #1C1F26;
-    --surface-raised: #23272F;
-    --surface-hover: #2A2F38;
-    --text: #EDEAE3;
-    --text-muted: #8A8F98;
-    --text-dim: #565B65;
-    --gold: #E3B341;
-    --gold-dim: #6B5A2C;
-    --ember: #E8603C;
-    --ember-dim: #5C3226;
-    --violet: #8C7CE0;
-    --violet-dim: #423A66;
-    --border: #2E323B;
-    --border-soft: #24272F;
+    --bg: #060911;
+    --surface: #0D1424;
+    --surface-raised: #131C33;
+    --surface-hover: #1A2540;
+    --text: #E7F3FF;
+    --text-muted: #7C93B8;
+    --text-dim: #45577A;
+    --accent: #35D2FF;
+    --accent-dim: #1C5B78;
+    --ember: #FF6B4A;
+    --ember-dim: #7A2F1E;
+    --violet: #9B6BFF;
+    --violet-dim: #4A3A82;
+    --border: #2A7FB8;
+    --border-soft: #1B4A63;
   }
+  html{background: var(--bg);}
   *{box-sizing:border-box; margin:0; padding:0;}
-<script>
-if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-        navigator.serviceWorker.register("./sw.js")
-            .then(() => console.log("Service Worker registered"))
-            .catch(err => console.log(err));
-    });
-}
-</script>  
-body{
-    background: var(--bg);
+  body{
+    background:
+      radial-gradient(ellipse at 20% -10%, rgba(53,210,255,0.07), transparent 45%),
+      radial-gradient(ellipse at 90% 10%, rgba(155,107,255,0.06), transparent 40%),
+      var(--bg);
+    background-color: var(--bg);
     color: var(--text);
     font-family:'Inter', sans-serif;
     min-height:100vh;
-    padding: 28px 16px 60px;
+    padding: 0 16px 60px;
   }
   .wrap{max-width: 960px; margin:0 auto;}
 
+  /* ---------- HUD panel corner brackets ---------- */
+  .panel{position:relative;}
+  .panel::before, .panel::after{
+    content:''; position:absolute; width:14px; height:14px;
+    border-color:var(--accent-dim); opacity:.7; pointer-events:none;
+  }
+  .panel::before{ top:-1px; left:-1px; border-top:2px solid; border-left:2px solid; }
+  .panel::after{ bottom:-1px; right:-1px; border-bottom:2px solid; border-right:2px solid; }
+
   /* ---------- Header ---------- */
-  .hdr{display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:22px; flex-wrap:wrap; gap:12px;}
+  .hdr{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    padding: 22px 0 16px; flex-wrap:wrap; gap:12px;
+    position:sticky; top:0; z-index:40;
+    background: linear-gradient(var(--bg) 78%, transparent);
+  }
   .hdr .eyebrow{font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:.18em; color:var(--text-dim); text-transform:uppercase;}
   h1{
-    font-family:'Barlow Condensed', sans-serif;
+    font-family:'Orbitron', sans-serif;
     font-weight:800;
-    font-size:42px;
-    letter-spacing:.02em;
-    text-transform:uppercase;
+    font-size:34px;
+    letter-spacing:.04em;
     line-height:1;
     color:var(--text);
+    text-shadow: 0 0 14px rgba(53,210,255,0.45);
   }
-  h1 span{color:var(--gold);}
+  h1 span{color:var(--accent);}
   .calo-total{text-align:right; font-family:'JetBrains Mono', monospace;}
-  .calo-total .num{font-size:26px; font-weight:700; color:var(--ember); white-space:nowrap;}
-  .calo-total .lbl{font-size:11px; letter-spacing:.12em; color:var(--text-muted); text-transform:uppercase;}
+  .calo-total .num{font-size:24px; font-weight:700; color:var(--ember); white-space:nowrap; text-shadow:0 0 10px rgba(255,107,74,0.35);}
+  .calo-total .lbl{font-size:10.5px; letter-spacing:.12em; color:var(--text-muted); text-transform:uppercase;}
   .sync-btn{
     display:flex; align-items:center; gap:6px;
     background:var(--surface); border:1px solid var(--border); border-radius:20px;
     padding:6px 14px; font-family:'JetBrains Mono', monospace; font-size:11px;
     color:var(--text-muted); cursor:pointer; white-space:nowrap;
   }
-  .sync-btn:hover{border-color:var(--gold-dim); color:var(--gold);}
-  .sync-btn.active{color:var(--gold); border-color:var(--gold-dim);}
+  .sync-btn:hover{border-color:var(--accent-dim); color:var(--accent);}
+  .sync-btn.active{color:var(--accent); border-color:var(--accent-dim); box-shadow:0 0 10px rgba(53,210,255,0.2);}
+
+  /* ---------- Tab navigation ---------- */
+  .tab-nav{
+    display:flex; gap:6px; overflow-x:auto; padding:4px 0 14px;
+    position:sticky; top:64px; z-index:39; background:var(--bg);
+    scrollbar-width:none;
+  }
+  .tab-nav::-webkit-scrollbar{display:none;}
+  .tab-btn{
+    flex-shrink:0;
+    display:flex; align-items:center; gap:7px;
+    background:var(--surface); border:1px solid var(--border);
+    border-radius:10px; padding:9px 16px;
+    font-family:'Barlow Condensed', sans-serif; font-weight:600; font-size:15px;
+    text-transform:uppercase; letter-spacing:.03em;
+    color:var(--text-muted); cursor:pointer; transition: all .18s ease;
+  }
+  .tab-btn:hover{border-color:var(--accent-dim); color:var(--text);}
+  .tab-btn.active{
+    color:var(--accent); border-color:var(--accent);
+    background: linear-gradient(180deg, rgba(53,210,255,0.12), rgba(53,210,255,0.02));
+    box-shadow: 0 0 14px rgba(53,210,255,0.18);
+  }
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block; animation: fadeIn .25s ease;}
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
 
   /* ---------- Sections ---------- */
   .section-title{
-    font-family:'Barlow Condensed', sans-serif;
-    font-weight:700;
-    font-size:20px;
-    text-transform:uppercase;
-    letter-spacing:.03em;
-    margin-bottom:12px;
+    font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:20px;
+    text-transform:uppercase; letter-spacing:.03em; margin-bottom:12px;
     display:flex; align-items:center; gap:10px;
   }
   .section-title .idx{color:var(--text-dim); font-family:'JetBrains Mono', monospace; font-size:13px; font-weight:400;}
 
   /* ---------- Profile ---------- */
-  .profile-section{
-    background: var(--surface);
-    border:1px solid var(--border);
-    border-radius:14px;
-    padding: 22px;
-    margin-bottom:24px;
-  }
+  .profile-section{ background: var(--surface); border:1px solid var(--border); border-radius:14px; padding: 22px; margin-bottom:24px; box-shadow:0 0 18px rgba(53,210,255,0.10), inset 0 0 30px rgba(53,210,255,0.03); }
   .featured-title-row{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:18px;}
   .featured-title-box{
     display:flex; align-items:center; gap:10px;
-    font-family:'Barlow Condensed', sans-serif;
-    font-size:22px; font-weight:700; text-transform:uppercase; letter-spacing:.02em;
+    font-family:'Barlow Condensed', sans-serif; font-size:22px; font-weight:700; text-transform:uppercase; letter-spacing:.02em;
     color:var(--text-dim);
   }
-  .featured-title-box.set{color:var(--gold);}
+  .featured-title-box.set{color:var(--accent); text-shadow:0 0 10px rgba(53,210,255,0.3);}
   .featured-title-box .icon{font-size:20px;}
   select#featuredSelect{
-    max-width:260px;
-    background:var(--surface-raised); border:1px solid var(--border); border-radius:8px;
+    max-width:260px; background:var(--surface-raised); border:1px solid var(--border); border-radius:8px;
     color:var(--text); font-family:'Inter',sans-serif; font-size:13px; padding:8px 10px; outline:none;
   }
-  .radar-grid{
-    display:grid;
-    grid-template-columns: 1fr 1fr;
-    gap:20px;
-  }
+  .radar-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:20px; }
   @media(max-width:600px){ .radar-grid{grid-template-columns:1fr;} }
   .radar-box{text-align:center;}
   .radar-box .radar-title{
@@ -117,195 +144,122 @@ body{
 
   /* ---------- Body Map ---------- */
   .bodymap-section{
-    background: var(--surface);
-    border:1px solid var(--border);
-    border-radius:14px;
-    padding: 24px 12px;
-    margin-bottom:24px;
-    position:relative;
-    overflow:hidden;
+    background: var(--surface); border:1px solid var(--border); border-radius:14px;
+    padding: 24px 12px; margin-bottom:24px; position:relative; overflow:hidden;
+    box-shadow:0 0 18px rgba(53,210,255,0.10);
   }
   .bodymap-section::before{
-    content:'';
-    position:absolute; inset:0;
-    background: radial-gradient(circle at 50% 20%, rgba(227,179,65,0.06), transparent 60%);
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(circle at 50% 20%, rgba(53,210,255,0.07), transparent 60%);
     pointer-events:none;
   }
-  .bodymap-grid{
-    display:grid;
-    grid-template-columns: 1fr 280px;
-    gap: 20px;
-    align-items:center;
-  }
+  .bodymap-grid{ display:grid; grid-template-columns: 1fr 280px; gap: 20px; align-items:center; }
   @media(max-width:680px){ .bodymap-grid{grid-template-columns:1fr;} }
 
   #silhouette{width:100%; max-width:300px; display:block; margin:0 auto;}
   .node-dot{fill:var(--surface-raised); stroke:var(--border); stroke-width:1.5; cursor:default; transition: all .25s ease;}
-  .node-dot.lit{fill:var(--gold); stroke:var(--gold);}
-  .node-pulse{fill:none; stroke:var(--gold); stroke-width:1; opacity:0;}
+  .node-dot.lit{fill:var(--accent); stroke:var(--accent);}
+  .node-pulse{fill:none; stroke:var(--accent); stroke-width:1; opacity:0;}
   .node-pulse.animate{animation: pulseRing 1.8s ease-out infinite;}
-  @keyframes pulseRing{
-    0%{ opacity:.55; r:9; }
-    100%{ opacity:0; r:20; }
-  }
+  @keyframes pulseRing{ 0%{ opacity:.55; r:9; } 100%{ opacity:0; r:20; } }
   .node-lvl{font-family:'JetBrains Mono', monospace; font-size:8.5px; font-weight:700; fill:var(--bg); text-anchor:middle; dominant-baseline:central;}
   .node-lvl.dim{fill:var(--text-dim);}
 
   .stat-list{display:flex; flex-direction:column; gap:9px; max-height:440px; overflow-y:auto; padding-right:4px;}
   .stat-row .top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;}
   .stat-row .name{font-family:'Barlow Condensed', sans-serif; font-weight:600; font-size:14.5px; text-transform:uppercase; letter-spacing:.03em; color:var(--text);}
-  .stat-row .lvl{font-family:'JetBrains Mono', monospace; font-size:10.5px; color:var(--gold);}
+  .stat-row .lvl{font-family:'JetBrains Mono', monospace; font-size:10.5px; color:var(--accent);}
   .bar-track{height:5px; background:var(--border-soft); border-radius:3px; overflow:hidden;}
-  .bar-fill{height:100%; background: linear-gradient(90deg, var(--gold-dim), var(--gold)); border-radius:3px; transition: width .5s ease;}
+  .bar-fill{height:100%; background: linear-gradient(90deg, var(--accent-dim), var(--accent)); border-radius:3px; transition: width .5s ease;}
   .stat-row .xp-sub{font-family:'JetBrains Mono', monospace; font-size:9.5px; color:var(--text-dim); margin-top:2px;}
 
+  /* ---------- Exercise toolbar ---------- */
+  .ex-toolbar{display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap;}
+  .ex-toolbar input[type=text]{flex:1; min-width:180px;}
+  .ex-toolbar .btn-ghost{white-space:nowrap;}
+
   /* ---------- Exercise cards ---------- */
-  .ex-grid{
-    display:grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px,1fr));
-    gap:12px;
-    margin-bottom:28px;
-  }
+  .ex-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap:12px; margin-bottom:28px; }
   .ex-card{
-    background:var(--surface);
-    border:1px solid var(--border);
-    border-radius:12px;
-    padding:16px;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    transition: border-color .2s ease;
+    background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px;
+    display:flex; flex-direction:column; gap:10px; transition: border-color .2s ease, box-shadow .2s ease;
+    box-shadow:0 0 12px rgba(53,210,255,0.06);
   }
-  .ex-card:hover{border-color:var(--gold-dim);}
+  .ex-card:hover{border-color:var(--accent); box-shadow:0 0 16px rgba(53,210,255,0.18);}
   .ex-card .ex-name{font-family:'Barlow Condensed', sans-serif; font-size:19px; font-weight:700; text-transform:uppercase; letter-spacing:.02em;}
   .ex-card .ex-tags{display:flex; flex-wrap:wrap; gap:6px;}
   .tag{
-    font-family:'JetBrains Mono', monospace;
-    font-size:10.5px;
-    padding:2px 7px;
-    border-radius:20px;
-    background:var(--surface-raised);
-    color:var(--text-muted);
-    border:1px solid var(--border);
+    font-family:'JetBrains Mono', monospace; font-size:10.5px; padding:2px 7px; border-radius:20px;
+    background:var(--surface-raised); color:var(--text-muted); border:1px solid var(--border);
   }
   .tag.calo{color:var(--ember); border-color:var(--ember-dim);}
   .ex-card .ex-count{font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-dim);}
   .ex-actions{display:flex; gap:8px; align-items:center; margin-top:2px;}
   .btn-plus{
-    flex:1;
-    background: var(--gold);
-    color:#1a1608;
-    border:none;
-    border-radius:8px;
-    padding:9px 0;
-    font-family:'Barlow Condensed', sans-serif;
-    font-weight:700;
-    font-size:16px;
-    letter-spacing:.03em;
-    text-transform:uppercase;
-    cursor:pointer;
-    transition: transform .1s ease, background .2s ease;
+    flex:1; background: var(--accent); color:#04141c; border:none; border-radius:8px; padding:9px 0;
+    font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:16px; letter-spacing:.03em;
+    text-transform:uppercase; cursor:pointer; transition: transform .1s ease, background .2s ease;
   }
   .btn-plus:active{transform:scale(0.96);}
-  .btn-plus:hover{background:#f0c25a;}
+  .btn-plus:hover{background:#6be2ff;}
   .btn-del{
-    background:transparent;
-    border:1px solid var(--border);
-    color:var(--text-dim);
-    border-radius:8px;
-    width:34px; height:34px;
-    cursor:pointer;
-    font-size:15px;
-    line-height:1;
-    transition: all .2s ease;
-    flex-shrink:0;
+    background:transparent; border:1px solid var(--border); color:var(--text-dim); border-radius:8px;
+    width:34px; height:34px; cursor:pointer; font-size:15px; line-height:1;
+    transition: all .2s ease; flex-shrink:0;
   }
   .btn-del:hover{border-color:var(--ember); color:var(--ember);}
+  .btn-del.confirm{
+    background:var(--ember); color:#fff; border-color:var(--ember); font-size:11px;
+    animation: warnPulse 1s ease-in-out infinite;
+  }
+  @keyframes warnPulse{ 0%,100%{box-shadow:0 0 0 rgba(255,107,74,0.5);} 50%{box-shadow:0 0 10px rgba(255,107,74,0.7);} }
+
+  /* ---------- Compact exercise rows ---------- */
+  .ex-rows{display:flex; flex-direction:column; gap:8px; margin-bottom:28px;}
+  .ex-row{
+    display:flex; align-items:center; gap:10px;
+    background:var(--surface); border:1px solid var(--border); border-radius:9px; padding:9px 12px;
+  }
+  .ex-row:hover{border-color:var(--accent-dim);}
+  .ex-row-name{flex:1; min-width:0; font-family:'Barlow Condensed', sans-serif; font-weight:600; font-size:15px; text-transform:uppercase; letter-spacing:.02em; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .ex-row-meta{font-family:'JetBrains Mono', monospace; font-size:10.5px; color:var(--text-dim); white-space:nowrap;}
+  .ex-row-meta .calo{color:var(--ember);}
+  .ex-row .btn-plus{flex:none; padding:6px 16px; font-size:14px;}
+  .ex-row .btn-del{width:30px; height:30px; font-size:13px;}
 
   /* ---------- Form ---------- */
-  .form-card{
-    background:var(--surface);
-    border:1px solid var(--border);
-    border-radius:14px;
-    padding:20px;
-    margin-bottom:28px;
-  }
+  .form-card{ background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:20px; margin-bottom:28px; box-shadow:0 0 16px rgba(53,210,255,0.08); }
   .form-row{margin-bottom:14px;}
-  label{
-    display:block;
-    font-family:'JetBrains Mono', monospace;
-    font-size:11px;
-    letter-spacing:.08em;
-    text-transform:uppercase;
-    color:var(--text-muted);
-    margin-bottom:6px;
-  }
+  label{ display:block; font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); margin-bottom:6px; }
   input[type=text], input[type=number], select{
-    width:100%;
-    background:var(--surface-raised);
-    border:1px solid var(--border);
-    border-radius:8px;
-    padding:10px 12px;
-    color:var(--text);
-    font-family:'Inter', sans-serif;
-    font-size:14px;
-    outline:none;
+    width:100%; background:var(--surface-raised); border:1px solid var(--border); border-radius:8px;
+    padding:10px 12px; color:var(--text); font-family:'Inter', sans-serif; font-size:14px; outline:none;
     transition: border-color .2s ease;
   }
   select{appearance:none; cursor:pointer;}
-  input:focus, select:focus{border-color:var(--gold);}
-  .xp-grid{
-    display:grid;
-    grid-template-columns: repeat(auto-fit, minmax(90px,1fr));
-    gap:10px;
-  }
+  input:focus, select:focus{border-color:var(--accent);}
+  .xp-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(90px,1fr)); gap:10px; }
   .xp-input-group label{color:var(--text-dim);}
   .xp-input-group input{text-align:center; font-family:'JetBrains Mono', monospace;}
   .calo-range-row{display:flex; gap:10px; max-width:320px;}
   .calo-range-row .form-row{flex:1; margin-bottom:0;}
   .form-footer{display:flex; justify-content:space-between; align-items:center; margin-top:16px; flex-wrap:wrap; gap:10px;}
   .btn-primary{
-    background:var(--gold);
-    color:#1a1608;
-    border:none;
-    border-radius:8px;
-    padding:11px 22px;
-    font-family:'Barlow Condensed', sans-serif;
-    font-weight:700;
-    font-size:16px;
-    letter-spacing:.03em;
-    text-transform:uppercase;
-    cursor:pointer;
+    background:var(--accent); color:#04141c; border:none; border-radius:8px; padding:11px 22px;
+    font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:16px; letter-spacing:.03em;
+    text-transform:uppercase; cursor:pointer;
   }
-  .btn-primary:hover{background:#f0c25a;}
+  .btn-primary:hover{background:#6be2ff;}
   .btn-ghost{
-    background:transparent;
-    border:1px solid var(--border);
-    color:var(--text-muted);
-    border-radius:8px;
-    padding:10px 16px;
-    font-family:'JetBrains Mono', monospace;
-    font-size:12px;
-    cursor:pointer;
+    background:transparent; border:1px solid var(--border); color:var(--text-muted); border-radius:8px;
+    padding:10px 16px; font-family:'JetBrains Mono', monospace; font-size:12px; cursor:pointer;
   }
   .btn-ghost:hover{border-color:var(--text-dim); color:var(--text);}
+  .btn-ghost.on{color:var(--accent); border-color:var(--accent-dim);}
 
   /* ---------- Log ---------- */
-  .log-list{
-    background:var(--surface);
-    border:1px solid var(--border);
-    border-radius:14px;
-    padding: 6px 20px;
-    max-height:220px;
-    overflow-y:auto;
-  }
-  .log-item{
-    display:flex; justify-content:space-between; align-items:center;
-    padding:10px 0;
-    border-bottom:1px solid var(--border-soft);
-    font-family:'JetBrains Mono', monospace;
-    font-size:12px;
-  }
+  .log-list{ background:var(--surface); border:1px solid var(--border); border-radius:14px; padding: 6px 20px; max-height:220px; overflow-y:auto; margin-bottom:8px; box-shadow:0 0 16px rgba(53,210,255,0.08);}
+  .log-item{ display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-soft); font-family:'JetBrains Mono', monospace; font-size:12px; }
   .log-item:last-child{border-bottom:none;}
   .log-item .lname{color:var(--text); font-family:'Inter',sans-serif; font-size:13px;}
   .log-item .ltime{color:var(--text-dim); font-size:10.5px;}
@@ -316,55 +270,28 @@ body{
   .badge-shelf{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px;}
   .badge-item{
     display:flex; align-items:center; gap:8px;
-    background: linear-gradient(135deg, rgba(227,179,65,0.14), rgba(227,179,65,0.04));
-    border:1px solid var(--gold-dim);
-    border-radius:30px;
-    padding:7px 8px 7px 14px;
-    font-family:'Barlow Condensed', sans-serif;
-    font-weight:600;
-    font-size:15px;
-    letter-spacing:.02em;
-    color:var(--gold);
+    background: linear-gradient(135deg, rgba(53,210,255,0.14), rgba(53,210,255,0.03));
+    border:1px solid var(--accent-dim); border-radius:30px; padding:7px 8px 7px 14px;
+    font-family:'Barlow Condensed', sans-serif; font-weight:600; font-size:15px; letter-spacing:.02em; color:var(--accent);
   }
   .badge-item.ach{
-    background: linear-gradient(135deg, rgba(140,124,224,0.16), rgba(140,124,224,0.04));
-    border-color:var(--violet-dim);
-    color:var(--violet);
+    background: linear-gradient(135deg, rgba(155,107,255,0.16), rgba(155,107,255,0.03));
+    border-color:var(--violet-dim); color:var(--violet);
   }
   .badge-item .trophy{font-size:14px;}
-  .badge-del{
-    background:transparent; border:none; color:inherit; opacity:.55;
-    width:22px; height:22px; border-radius:50%; cursor:pointer; font-size:12px; line-height:1;
-  }
+  .badge-del{ background:transparent; border:none; color:inherit; opacity:.55; width:22px; height:22px; border-radius:50%; cursor:pointer; font-size:12px; line-height:1; }
   .badge-del:hover{opacity:1; background:rgba(255,255,255,0.08);}
-  .rank-grid{
-    display:grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
-    gap:12px;
-    margin-bottom:28px;
-  }
-  .rank-card{
-    background:var(--surface);
-    border:1px solid var(--border);
-    border-radius:12px;
-    padding:16px;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-  }
-  .rank-card.ready{border-color:var(--violet-dim);}
+  .rank-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap:12px; margin-bottom:28px; }
+  .rank-card{ background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:10px; box-shadow:0 0 12px rgba(53,210,255,0.06); }
+  .rank-card.ready{border-color:var(--violet-dim); box-shadow:0 0 14px rgba(155,107,255,0.12);}
   .rank-card .rank-top{display:flex; justify-content:space-between; align-items:flex-start; gap:8px;}
   .rank-card .rank-name{font-family:'Barlow Condensed', sans-serif; font-size:19px; font-weight:700; text-transform:uppercase; letter-spacing:.02em;}
   .req-item{margin-bottom:6px;}
   .req-item .req-top{display:flex; justify-content:space-between; font-family:'JetBrains Mono', monospace; font-size:10.5px; color:var(--text-muted); margin-bottom:3px;}
   .req-bar-track{height:5px; background:var(--border-soft); border-radius:3px; overflow:hidden;}
   .req-bar-fill{height:100%; background: linear-gradient(90deg, var(--violet-dim), var(--violet)); border-radius:3px;}
-  .req-bar-fill.done{background: linear-gradient(90deg, var(--gold-dim), var(--gold));}
-  .test-desc{
-    font-size:12.5px; color:var(--text-muted);
-    background:var(--surface-raised); border:1px solid var(--border-soft); border-radius:8px;
-    padding:8px 10px; line-height:1.4;
-  }
+  .req-bar-fill.done{background: linear-gradient(90deg, var(--accent-dim), var(--accent));}
+  .test-desc{ font-size:12.5px; color:var(--text-muted); background:var(--surface-raised); border:1px solid var(--border-soft); border-radius:8px; padding:8px 10px; line-height:1.4; }
   .test-desc b{color:var(--text); font-weight:600;}
   .rank-status{font-family:'JetBrains Mono', monospace; font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; padding:4px 0;}
   .rank-status.locked{color:var(--text-dim);}
@@ -378,32 +305,27 @@ body{
   ::-webkit-scrollbar{width:6px;}
   ::-webkit-scrollbar-thumb{background:var(--border); border-radius:3px;}
 
-  .footer-actions{display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap; margin-top:18px;}
+  .footer-actions{display:flex; flex-direction:column; gap:10px; align-items:flex-start;}
+  .footer-actions .btn-ghost{width:100%; text-align:left;}
 
-  .modal-overlay{
-    display:none; position:fixed; inset:0; background:rgba(10,11,13,0.75);
-    align-items:center; justify-content:center; z-index:100; padding:20px;
-  }
+  .modal-overlay{ display:none; position:fixed; inset:0; background:rgba(3,5,10,0.8); align-items:center; justify-content:center; z-index:100; padding:20px; }
   .modal-overlay.show{display:flex;}
-  .modal-box{background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:22px; max-width:480px; width:100%;}
+  .modal-box{background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:22px; max-width:480px; width:100%; box-shadow:0 0 30px rgba(53,210,255,0.08);}
   .modal-title{font-family:'Barlow Condensed', sans-serif; font-weight:700; font-size:20px; text-transform:uppercase; letter-spacing:.03em; margin-bottom:8px;}
   .modal-desc{font-size:13px; color:var(--text-muted); margin-bottom:12px; line-height:1.5;}
   .modal-textarea{
-    width:100%; height:140px; resize:vertical;
-    background:var(--surface-raised); border:1px solid var(--border); border-radius:8px;
-    color:var(--text); font-family:'JetBrains Mono', monospace; font-size:11px;
-    padding:10px 12px; outline:none;
+    width:100%; height:140px; resize:vertical; background:var(--surface-raised); border:1px solid var(--border); border-radius:8px;
+    color:var(--text); font-family:'JetBrains Mono', monospace; font-size:11px; padding:10px 12px; outline:none;
   }
-  .modal-textarea:focus{border-color:var(--gold);}
+  .modal-textarea:focus{border-color:var(--accent);}
   .modal-actions{display:flex; justify-content:flex-end; gap:10px; margin-top:14px; flex-wrap:wrap;}
 
   .toast{
     position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
-    background:var(--surface-raised); border:1px solid var(--gold-dim);
-    color:var(--gold); padding:10px 20px; border-radius:30px;
-    font-family:'JetBrains Mono', monospace; font-size:12.5px;
+    background:var(--surface-raised); border:1px solid var(--accent-dim); color:var(--accent);
+    padding:10px 20px; border-radius:30px; font-family:'JetBrains Mono', monospace; font-size:12.5px;
     opacity:0; pointer-events:none; transition: opacity .3s ease, transform .3s ease;
-    z-index:50; max-width:90vw; text-align:center;
+    z-index:50; max-width:90vw; text-align:center; box-shadow:0 0 16px rgba(53,210,255,0.2);
   }
   .toast.show{opacity:1; transform:translateX(-50%) translateY(-6px);}
 </style>
@@ -427,144 +349,170 @@ body{
     </div>
   </div>
 
-  <!-- PROFILE -->
-  <div class="section-title"><span class="idx">00</span> Hồ sơ</div>
-  <div class="profile-section">
-    <div class="featured-title-row">
-      <div class="featured-title-box" id="featuredTitleDisplay"><span class="icon">🎖️</span>Chưa chọn danh hiệu</div>
-      <select id="featuredSelect" onchange="setFeaturedTitle(this.value)"></select>
-    </div>
-    <div class="radar-grid">
-      <div class="radar-box">
-        <div class="radar-title">Nhóm Cơ Bắp</div>
-        <div id="radarMuscle"></div>
-      </div>
-      <div class="radar-box">
-        <div class="radar-title">Nhóm Thể Lực</div>
-        <div id="radarPerf"></div>
-      </div>
-    </div>
+  <div class="tab-nav">
+    <button class="tab-btn active" data-tab="profile" onclick="showTab('profile')">🧑 Hồ Sơ</button>
+    <button class="tab-btn" data-tab="exercise" onclick="showTab('exercise')">🏋️ Bài Tập</button>
+    <button class="tab-btn" data-tab="rank" onclick="showTab('rank')">🎖️ Rank</button>
+    <button class="tab-btn" data-tab="achievement" onclick="showTab('achievement')">⭐ Thành Tựu</button>
+    <button class="tab-btn" data-tab="settings" onclick="showTab('settings')">⚙️ Cài Đặt</button>
   </div>
 
-  <!-- BODY MAP -->
-  <div class="bodymap-section">
-    <div class="bodymap-grid">
-      <svg id="silhouette" viewBox="0 0 300 480" xmlns="http://www.w3.org/2000/svg">
-        <g fill="none" stroke="#33383F" stroke-width="2">
-          <circle cx="150" cy="42" r="24"/>
-          <path d="M150 66 C 110 70, 90 90, 84 120 L 78 195 C 76 210, 82 218, 92 216 L 100 160 L 96 260 C 95 275, 100 285, 112 288 L 118 400 C 118 412, 128 418, 136 416 L 140 300 L 146 300 L 150 416 C 158 418, 168 412, 168 400 L 174 288 C 186 285, 191 275, 190 260 L 186 160 L 194 216 C 204 218, 210 210, 208 195 L 202 120 C 196 90, 176 70, 150 66 Z"/>
-        </g>
-        <g stroke="#2E323B" stroke-width="1" stroke-dasharray="2,3">
-          <line x1="88" y1="98" x2="30" y2="98"/>
-          <line x1="133" y1="123" x2="30" y2="123"/>
-          <line x1="167" y1="123" x2="270" y2="123"/>
-          <line x1="150" y1="153" x2="270" y2="153"/>
-          <line x1="150" y1="198" x2="270" y2="200"/>
-          <line x1="203" y1="173" x2="270" y2="175"/>
-          <line x1="205" y1="228" x2="270" y2="230"/>
-          <line x1="150" y1="270" x2="30" y2="270"/>
-          <line x1="150" y1="390" x2="230" y2="410"/>
-          <line x1="150" y1="440" x2="30" y2="440"/>
-        </g>
-        <g id="node-vai"><circle class="node-pulse" cx="88" cy="98" r="9"/><circle class="node-dot" cx="88" cy="98" r="11"/><text class="node-lvl" x="88" y="99">1</text></g>
-        <g id="node-tim"><circle class="node-pulse" cx="133" cy="123" r="9"/><circle class="node-dot" cx="133" cy="123" r="11"/><text class="node-lvl" x="133" y="124">1</text></g>
-        <g id="node-phoi"><circle class="node-pulse" cx="167" cy="123" r="9"/><circle class="node-dot" cx="167" cy="123" r="11"/><text class="node-lvl" x="167" y="124">1</text></g>
-        <g id="node-nguc"><circle class="node-pulse" cx="150" cy="153" r="9"/><circle class="node-dot" cx="150" cy="153" r="11"/><text class="node-lvl" x="150" y="154">1</text></g>
-        <g id="node-core"><circle class="node-pulse" cx="150" cy="198" r="9"/><circle class="node-dot" cx="150" cy="198" r="11"/><text class="node-lvl" x="150" y="199">1</text></g>
-        <g id="node-lung"><circle class="node-pulse" cx="203" cy="173" r="9"/><circle class="node-dot" cx="203" cy="173" r="11"/><text class="node-lvl" x="203" y="174">1</text></g>
-        <g id="node-tay"><circle class="node-pulse" cx="205" cy="228" r="9"/><circle class="node-dot" cx="205" cy="228" r="11"/><text class="node-lvl" x="205" y="229">1</text></g>
-        <g id="node-mong"><circle class="node-pulse" cx="150" cy="270" r="9"/><circle class="node-dot" cx="150" cy="270" r="11"/><text class="node-lvl" x="150" y="271">1</text></g>
-        <g id="node-chan"><circle class="node-pulse" cx="150" cy="390" r="9"/><circle class="node-dot" cx="150" cy="390" r="11"/><text class="node-lvl" x="150" y="391">1</text></g>
-        <g id="node-nhanhnhen"><circle class="node-pulse" cx="150" cy="440" r="9"/><circle class="node-dot" cx="150" cy="440" r="11"/><text class="node-lvl" x="150" y="441">1</text></g>
-      </svg>
-      <div class="stat-list" id="statList"></div>
-    </div>
-  </div>
-
-  <!-- EXERCISE LIBRARY -->
-  <div class="section-title"><span class="idx">01</span> Bài tập</div>
-  <div class="ex-grid" id="exGrid"></div>
-
-  <!-- ADD EXERCISE FORM -->
-  <div class="section-title"><span class="idx">02</span> Tạo bài tập mới</div>
-  <div class="form-card">
-    <div class="form-row">
-      <label for="exName">Tên bài tập</label>
-      <input type="text" id="exName" placeholder="VD: Push up">
-    </div>
-    <div class="form-row">
-      <label>XP cộng vào từng bộ phận (mỗi lần bấm +1)</label>
-      <div class="xp-grid" id="xpGridForm"></div>
-    </div>
-    <div class="form-row">
-      <label>Calo đốt / lần (khoảng ước tính)</label>
-      <div class="calo-range-row">
-        <div class="form-row"><input type="number" id="exCaloMin" value="0" min="0" step="0.5" placeholder="Tối thiểu"></div>
-        <div class="form-row"><input type="number" id="exCaloMax" value="0" min="0" step="0.5" placeholder="Tối đa"></div>
+  <!-- ================= TAB: PROFILE ================= -->
+  <section class="tab-panel active" data-tab="profile">
+    <div class="profile-section panel">
+      <div class="featured-title-row">
+        <div class="featured-title-box" id="featuredTitleDisplay"><span class="icon">🎖️</span>Chưa chọn danh hiệu</div>
+        <select id="featuredSelect" onchange="setFeaturedTitle(this.value)"></select>
+      </div>
+      <div class="radar-grid">
+        <div class="radar-box">
+          <div class="radar-title">Nhóm Cơ Bắp</div>
+          <div id="radarMuscle"></div>
+        </div>
+        <div class="radar-box">
+          <div class="radar-title">Nhóm Thể Lực</div>
+          <div id="radarPerf"></div>
+        </div>
       </div>
     </div>
-    <div class="form-footer">
-      <button class="btn-primary" onclick="addExercise()">+ Thêm bài tập</button>
-      <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim);">VD: Push up → Ngực +1, Vai +1, Tay +1, Calo 8~12</span>
-    </div>
-  </div>
 
-  <!-- RANK UP -->
-  <div class="section-title"><span class="idx">03</span> Rank Up</div>
-  <div class="badge-shelf" id="rankBadgeShelf"></div>
-  <div class="rank-grid" id="rankGrid"></div>
+    <div class="bodymap-section panel">
+      <div class="bodymap-grid">
+        <svg id="silhouette" viewBox="0 0 300 480" xmlns="http://www.w3.org/2000/svg">
+          <g fill="none" stroke="#232E44" stroke-width="2">
+            <circle cx="150" cy="42" r="24"/>
+            <path d="M150 66 C 110 70, 90 90, 84 120 L 78 195 C 76 210, 82 218, 92 216 L 100 160 L 96 260 C 95 275, 100 285, 112 288 L 118 400 C 118 412, 128 418, 136 416 L 140 300 L 146 300 L 150 416 C 158 418, 168 412, 168 400 L 174 288 C 186 285, 191 275, 190 260 L 186 160 L 194 216 C 204 218, 210 210, 208 195 L 202 120 C 196 90, 176 70, 150 66 Z"/>
+          </g>
+          <g stroke="#202D4A" stroke-width="1" stroke-dasharray="2,3">
+            <line x1="88" y1="98" x2="30" y2="98"/>
+            <line x1="133" y1="123" x2="30" y2="123"/>
+            <line x1="167" y1="123" x2="270" y2="123"/>
+            <line x1="150" y1="153" x2="270" y2="153"/>
+            <line x1="150" y1="198" x2="270" y2="200"/>
+            <line x1="203" y1="173" x2="270" y2="175"/>
+            <line x1="205" y1="228" x2="270" y2="230"/>
+            <line x1="150" y1="270" x2="30" y2="270"/>
+            <line x1="150" y1="390" x2="230" y2="410"/>
+            <line x1="150" y1="440" x2="30" y2="440"/>
+          </g>
+          <g id="node-vai"><circle class="node-pulse" cx="88" cy="98" r="9"/><circle class="node-dot" cx="88" cy="98" r="11"/><text class="node-lvl" x="88" y="99">1</text></g>
+          <g id="node-tim"><circle class="node-pulse" cx="133" cy="123" r="9"/><circle class="node-dot" cx="133" cy="123" r="11"/><text class="node-lvl" x="133" y="124">1</text></g>
+          <g id="node-phoi"><circle class="node-pulse" cx="167" cy="123" r="9"/><circle class="node-dot" cx="167" cy="123" r="11"/><text class="node-lvl" x="167" y="124">1</text></g>
+          <g id="node-nguc"><circle class="node-pulse" cx="150" cy="153" r="9"/><circle class="node-dot" cx="150" cy="153" r="11"/><text class="node-lvl" x="150" y="154">1</text></g>
+          <g id="node-core"><circle class="node-pulse" cx="150" cy="198" r="9"/><circle class="node-dot" cx="150" cy="198" r="11"/><text class="node-lvl" x="150" y="199">1</text></g>
+          <g id="node-lung"><circle class="node-pulse" cx="203" cy="173" r="9"/><circle class="node-dot" cx="203" cy="173" r="11"/><text class="node-lvl" x="203" y="174">1</text></g>
+          <g id="node-tay"><circle class="node-pulse" cx="205" cy="228" r="9"/><circle class="node-dot" cx="205" cy="228" r="11"/><text class="node-lvl" x="205" y="229">1</text></g>
+          <g id="node-mong"><circle class="node-pulse" cx="150" cy="270" r="9"/><circle class="node-dot" cx="150" cy="270" r="11"/><text class="node-lvl" x="150" y="271">1</text></g>
+          <g id="node-chan"><circle class="node-pulse" cx="150" cy="390" r="9"/><circle class="node-dot" cx="150" cy="390" r="11"/><text class="node-lvl" x="150" y="391">1</text></g>
+          <g id="node-nhanhnhen"><circle class="node-pulse" cx="150" cy="440" r="9"/><circle class="node-dot" cx="150" cy="440" r="11"/><text class="node-lvl" x="150" y="441">1</text></g>
+        </svg>
+        <div class="stat-list" id="statList"></div>
+      </div>
+    </div>
 
-  <div class="section-title"><span class="idx">04</span> Tạo danh hiệu / rank mới</div>
-  <div class="form-card">
-    <div class="form-row">
-      <label for="rankName">Tên danh hiệu (rank)</label>
-      <input type="text" id="rankName" placeholder="VD: Sky Walker II">
-    </div>
-    <div class="form-row">
-      <label>Điều kiện XP để đủ tư cách làm test</label>
-      <div id="reqRows"></div>
-      <button class="btn-ghost" type="button" onclick="addReqRow('reqRows')">+ Thêm điều kiện</button>
-    </div>
-    <div class="form-row">
-      <label for="rankTest">Mô tả bài test (tùy chọn — tự xác nhận khi hoàn thành)</label>
-      <input type="text" id="rankTest" placeholder="VD: Nhảy cao chạm mốc 1m55">
-    </div>
-    <div class="form-footer">
-      <button class="btn-primary" onclick="addRank()">+ Thêm danh hiệu</button>
-      <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim);">VD: Sky Walker I — 500 XP Chân · Sky Walker II — 500 XP Chân + test nhảy 1m55</span>
-    </div>
-  </div>
+    <div class="section-title">Nhật ký gần đây</div>
+    <div class="log-list panel" id="logList"></div>
+  </section>
 
-  <!-- ACHIEVEMENTS -->
-  <div class="section-title"><span class="idx">05</span> Achievement</div>
-  <div class="badge-shelf" id="achBadgeShelf"></div>
-  <div class="rank-grid" id="achGrid"></div>
+  <!-- ================= TAB: EXERCISE ================= -->
+  <section class="tab-panel" data-tab="exercise">
+    <div class="section-title"><span class="idx">01</span> Bài tập</div>
+    <div class="ex-toolbar">
+      <input type="text" id="exSearch" placeholder="🔍 Tìm bài tập..." oninput="renderExercises()">
+      <button class="btn-ghost" id="compactToggleBtn" onclick="toggleCompact()">☰ Thu gọn</button>
+    </div>
+    <div class="ex-grid" id="exGrid"></div>
+    <div class="ex-rows" id="exRows" style="display:none;"></div>
 
-  <div class="section-title"><span class="idx">06</span> Tạo thành tựu mới</div>
-  <div class="form-card">
-    <div class="form-row">
-      <label for="achName">Tên thành tựu</label>
-      <input type="text" id="achName" placeholder="VD: Iron Core">
+    <div class="section-title" id="exFormTitle"><span class="idx">02</span> Tạo bài tập mới</div>
+    <div class="form-card panel" id="exFormCard">
+      <div class="form-row">
+        <label for="exName">Tên bài tập</label>
+        <input type="text" id="exName" placeholder="VD: Push up">
+      </div>
+      <div class="form-row">
+        <label>XP cộng vào từng bộ phận (mỗi lần bấm +1)</label>
+        <div class="xp-grid" id="xpGridForm"></div>
+      </div>
+      <div class="form-row">
+        <label>Calo đốt / lần (khoảng ước tính)</label>
+        <div class="calo-range-row">
+          <div class="form-row"><input type="number" id="exCaloMin" value="0" min="0" step="0.5" placeholder="Tối thiểu"></div>
+          <div class="form-row"><input type="number" id="exCaloMax" value="0" min="0" step="0.5" placeholder="Tối đa"></div>
+        </div>
+      </div>
+      <div class="form-footer">
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn-primary" id="exSubmitBtn" onclick="saveExercise()">+ Thêm bài tập</button>
+          <button class="btn-ghost" id="exCancelBtn" onclick="cancelEditExercise()" style="display:none;">Hủy chỉnh sửa</button>
+        </div>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim);">VD: Push up → Ngực +1, Vai +1, Tay +1, Calo 8~12</span>
+      </div>
     </div>
-    <div class="form-row">
-      <label>Điều kiện XP (tự động đạt khi đủ, không cần test)</label>
-      <div id="achReqRows"></div>
-      <button class="btn-ghost" type="button" onclick="addReqRow('achReqRows')">+ Thêm điều kiện</button>
-    </div>
-    <div class="form-footer">
-      <button class="btn-primary" onclick="addAchievement()">+ Thêm thành tựu</button>
-      <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim);">Tự động mở khóa ngay khi đủ XP, không cần xác nhận</span>
-    </div>
-  </div>
+  </section>
 
-  <!-- LOG -->
-  <div class="section-title"><span class="idx">07</span> Nhật ký hôm nay</div>
-  <div class="log-list" id="logList"></div>
-  <div class="footer-actions">
-    <button class="btn-ghost" onclick="openExportModal()">⇧ Xuất dữ liệu</button>
-    <button class="btn-ghost" onclick="openImportModal()">⇩ Nhập dữ liệu</button>
-    <button class="btn-ghost" onclick="resetAll()">↺ Đặt lại toàn bộ dữ liệu</button>
-  </div>
+  <!-- ================= TAB: RANK ================= -->
+  <section class="tab-panel" data-tab="rank">
+    <div class="section-title"><span class="idx">01</span> Rank Up</div>
+    <div class="badge-shelf" id="rankBadgeShelf"></div>
+    <div class="rank-grid" id="rankGrid"></div>
+
+    <div class="section-title"><span class="idx">02</span> Tạo danh hiệu / rank mới</div>
+    <div class="form-card panel">
+      <div class="form-row">
+        <label for="rankName">Tên danh hiệu (rank)</label>
+        <input type="text" id="rankName" placeholder="VD: Sky Walker II">
+      </div>
+      <div class="form-row">
+        <label>Điều kiện XP để đủ tư cách làm test</label>
+        <div id="reqRows"></div>
+        <button class="btn-ghost" type="button" onclick="addReqRow('reqRows')">+ Thêm điều kiện</button>
+      </div>
+      <div class="form-row">
+        <label for="rankTest">Mô tả bài test (tùy chọn — tự xác nhận khi hoàn thành)</label>
+        <input type="text" id="rankTest" placeholder="VD: Nhảy cao chạm mốc 1m55">
+      </div>
+      <div class="form-footer">
+        <button class="btn-primary" onclick="addRank()">+ Thêm danh hiệu</button>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim);">VD: Sky Walker I — 500 XP Chân · Sky Walker II — 500 XP Chân + test nhảy 1m55</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TAB: ACHIEVEMENT ================= -->
+  <section class="tab-panel" data-tab="achievement">
+    <div class="section-title"><span class="idx">01</span> Achievement</div>
+    <div class="badge-shelf" id="achBadgeShelf"></div>
+    <div class="rank-grid" id="achGrid"></div>
+
+    <div class="section-title"><span class="idx">02</span> Tạo thành tựu mới</div>
+    <div class="form-card panel">
+      <div class="form-row">
+        <label for="achName">Tên thành tựu</label>
+        <input type="text" id="achName" placeholder="VD: Iron Core">
+      </div>
+      <div class="form-row">
+        <label>Điều kiện XP (tự động đạt khi đủ, không cần test)</label>
+        <div id="achReqRows"></div>
+        <button class="btn-ghost" type="button" onclick="addReqRow('achReqRows')">+ Thêm điều kiện</button>
+      </div>
+      <div class="form-footer">
+        <button class="btn-primary" onclick="addAchievement()">+ Thêm thành tựu</button>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim);">Tự động mở khóa ngay khi đủ XP, không cần xác nhận</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TAB: SETTINGS ================= -->
+  <section class="tab-panel" data-tab="settings">
+    <div class="section-title">Cài đặt</div>
+    <div class="form-card panel footer-actions">
+      <button class="btn-ghost" onclick="openSyncModal()">🔗 Đồng bộ đa thiết bị</button>
+      <button class="btn-ghost" onclick="openExportModal()">⇧ Xuất dữ liệu</button>
+      <button class="btn-ghost" onclick="openImportModal()">⇩ Nhập dữ liệu</button>
+      <button class="btn-ghost" onclick="resetAll()">↺ Đặt lại toàn bộ dữ liệu</button>
+    </div>
+  </section>
 
 </div>
 
@@ -601,10 +549,13 @@ const PART_LABELS = {
   vai:'Vai', nguc:'Ngực', tay:'Tay', mong:'Mông', chan:'Chân',
   core:'Core', lung:'Lưng', nhanhnhen:'Nhanh nhẹn', tim:'Tim', phoi:'Phổi'
 };
+const PART_ICONS = {
+  vai:'🦾', nguc:'🎽', tay:'💪', mong:'🍑', chan:'🦵',
+  core:'🧱', lung:'🎒', nhanhnhen:'💥', tim:'🫀', phoi:'🫁'
+};
 const GROUP_MUSCLE = ['tay','chan','vai','lung','nguc'];
 const GROUP_PERF = ['core','tim','phoi','nhanhnhen','mong'];
 const XP_PER_LEVEL = 100;
-const RADAR_MAX = 500;
 
 let state = {
   exercises: [],
@@ -626,6 +577,14 @@ const defaultExercises = [
 
 function defaultStats(){
   return {vai:0, nguc:0, tay:0, mong:0, chan:0, core:0, lung:0, nhanhnhen:0, tim:0, phoi:0};
+}
+
+/* ---------- Tabs ---------- */
+function showTab(name){
+  document.querySelectorAll('.tab-panel').forEach(p=> p.classList.toggle('active', p.dataset.tab===name));
+  document.querySelectorAll('.tab-btn').forEach(b=> b.classList.toggle('active', b.dataset.tab===name));
+  try{ localStorage.setItem('ui-active-tab', name); }catch(e){}
+  window.scrollTo({top:0, behavior:'smooth'});
 }
 
 /* Dùng window.storage khi mở dưới dạng artifact trong Claude.
@@ -661,11 +620,8 @@ let syncCode = localStorage.getItem('fitness-sync-code') || '';
 
 function initFirebase(){
   if(firebaseApp) return true;
-  try{
-    firebaseApp = firebase.initializeApp(FIREBASE_CONFIG);
-    db = firebase.firestore();
-    return true;
-  }catch(e){ console.error('Firebase init lỗi', e); return false; }
+  try{ firebaseApp = firebase.initializeApp(FIREBASE_CONFIG); db = firebase.firestore(); return true; }
+  catch(e){ console.error('Firebase init lỗi', e); return false; }
 }
 
 function updateSyncIndicator(connected){
@@ -705,7 +661,7 @@ function normalizeState(){
   state.stats = Object.assign(defaultStats(), state.stats || {});
   if(!Array.isArray(state.ranks)) state.ranks = [];
   if(!Array.isArray(state.achievements)) state.achievements = [];
-  if(!Array.isArray(state.exercises) || state.exercises.length===0) state.exercises = state.exercises && state.exercises.length ? state.exercises : defaultExercises;
+  if(!Array.isArray(state.exercises) || state.exercises.length===0) state.exercises = (state.exercises && state.exercises.length) ? state.exercises : defaultExercises;
   if(!Array.isArray(state.log)) state.log = [];
   if(!state.profile) state.profile = { featuredType: null, featuredId: null };
   if(typeof state.totalCaloMin !== 'number' || typeof state.totalCaloMax !== 'number'){
@@ -768,16 +724,9 @@ async function pushSync(){
 async function loadState(){
   try{
     const res = await storageAdapter.get(STORAGE_KEY);
-    if(res && res.value){
-      const parsed = JSON.parse(res.value);
-      state = Object.assign(state, parsed);
-    } else {
-      state.exercises = defaultExercises;
-    }
-  }catch(e){
-    console.error('Lỗi tải dữ liệu', e);
-    state.exercises = defaultExercises;
-  }
+    if(res && res.value){ const parsed = JSON.parse(res.value); state = Object.assign(state, parsed); }
+    else { state.exercises = defaultExercises; }
+  }catch(e){ console.error('Lỗi tải dữ liệu', e); state.exercises = defaultExercises; }
   normalizeState();
   await saveState();
   buildXpForm();
@@ -786,6 +735,13 @@ async function loadState(){
   checkAchievements();
   render();
   updateSyncIndicator();
+
+  const savedTab = (function(){ try{ return localStorage.getItem('ui-active-tab'); }catch(e){ return null; } })();
+  if(savedTab) showTab(savedTab);
+
+  const savedCompact = (function(){ try{ return localStorage.getItem('ui-compact')==='1'; }catch(e){ return false; } })();
+  if(savedCompact) toggleCompact(true);
+
   if(syncCode) await connectSync();
 }
 
@@ -816,15 +772,11 @@ function escapeHtml(str){
   return d.innerHTML;
 }
 
-function caloText(min, max){
-  return min === max ? `${min}` : `${min}~${max}`;
-}
+function caloText(min, max){ return min === max ? `${min}` : `${min}~${max}`; }
 
 function buildXpForm(){
   const el = document.getElementById('xpGridForm');
-  el.innerHTML = PARTS.map(p=>
-    `<div class="xp-input-group"><label>${PART_LABELS[p]}</label><input type="number" id="xp-${p}" value="0" min="0"></div>`
-  ).join('');
+  el.innerHTML = PARTS.map(p=> `<div class="xp-input-group"><label>${PART_LABELS[p]}</label><input type="number" id="xp-${p}" value="0" min="0"></div>`).join('');
 }
 
 /* ---------- Body map & stat list ---------- */
@@ -838,11 +790,8 @@ function renderBodyMap(){
     const dot = node.querySelector('.node-dot');
     const pulse = node.querySelector('.node-pulse');
     lvlText.textContent = level;
-    if(level > 1){
-      dot.classList.add('lit'); lvlText.classList.remove('dim'); pulse.classList.add('animate');
-    } else {
-      dot.classList.remove('lit'); lvlText.classList.add('dim'); pulse.classList.remove('animate');
-    }
+    if(level > 1){ dot.classList.add('lit'); lvlText.classList.remove('dim'); pulse.classList.add('animate'); }
+    else { dot.classList.remove('lit'); lvlText.classList.add('dim'); pulse.classList.remove('animate'); }
   });
 }
 
@@ -852,14 +801,14 @@ function renderStatList(){
     const xp = state.stats[p] || 0;
     const {level, into, pct} = levelInfo(xp);
     return `<div class="stat-row">
-      <div class="top"><span class="name">${PART_LABELS[p]}</span><span class="lvl">LV ${level}</span></div>
+      <div class="top"><span class="name">${PART_ICONS[p]} ${PART_LABELS[p]}</span><span class="lvl">LV ${level}</span></div>
       <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
       <div class="xp-sub">${into} / ${XP_PER_LEVEL} XP · tổng ${xp} XP</div>
     </div>`;
   }).join('');
 }
 
-/* ---------- Profile: featured title + radar charts ---------- */
+/* ---------- Profile: featured title + radar charts (proportional) ---------- */
 function getAchievedTitles(){
   const ranks = state.ranks.filter(r=> r.completed).map(r=> ({id:r.id, name:r.name, type:'rank'}));
   const achs = state.achievements.filter(a=> a.completed).map(a=> ({id:a.id, name:a.name, type:'achievement'}));
@@ -887,35 +836,37 @@ function pentagonPoint(cx, cy, r, i, frac){
 }
 
 function buildRadarSVG(keys, color){
-  const cx=120, cy=120, R=88;
-  const fractions = keys.map(k=> Math.min(1, (state.stats[k]||0) / RADAR_MAX));
+  const cx=130, cy=128, R=84;
+  const xps = keys.map(k=> state.stats[k]||0);
+  const maxXp = Math.max(...xps);
+  const fractions = xps.map(x=> maxXp>0 ? x/maxXp : 0);
+
   let gridPolys = '';
   [0.25,0.5,0.75,1].forEach(f=>{
     const pts = keys.map((_,i)=> pentagonPoint(cx,cy,R,i,f).join(',')).join(' ');
-    gridPolys += `<polygon points="${pts}" fill="none" stroke="#2E323B" stroke-width="1"/>`;
+    gridPolys += `<polygon points="${pts}" fill="none" stroke="#202D4A" stroke-width="1"/>`;
   });
   let axisLines = '';
   keys.forEach((_,i)=>{
     const [x,y] = pentagonPoint(cx,cy,R,i,1);
-    axisLines += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#2E323B" stroke-width="1"/>`;
+    axisLines += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="#202D4A" stroke-width="1"/>`;
   });
   const dataPts = keys.map((k,i)=> pentagonPoint(cx,cy,R,i,fractions[i]).join(',')).join(' ');
   let dots = '';
   keys.forEach((k,i)=>{
     const [x,y] = pentagonPoint(cx,cy,R,i,fractions[i]);
-    dots += `<circle cx="${x}" cy="${y}" r="4" fill="${color}" stroke="#14161A" stroke-width="1.5"/>`;
+    dots += `<circle cx="${x}" cy="${y}" r="4" fill="${color}" stroke="#060911" stroke-width="1.5"/>`;
   });
   let labels = '';
   keys.forEach((k,i)=>{
-    const [x,y] = pentagonPoint(cx,cy,R,i,1.30);
+    const [x,y] = pentagonPoint(cx,cy,R,i,1.24);
     let anchor='middle', dy=0;
-    if(x < cx - 8) anchor='end'; else if(x > cx + 8) anchor='start';
-    if(y < cy - 8) dy=-2; else if(y > cy + 8) dy=12;
+    if(y < cy - 8) dy=-2; else if(y > cy + 8) dy=14;
     const lvl = levelInfo(state.stats[k]||0).level;
-    labels += `<text x="${x}" y="${y+dy}" text-anchor="${anchor}" style="font-family:'Barlow Condensed',sans-serif; text-transform:uppercase;" font-size="12.5" font-weight="600" fill="#EDEAE3">${PART_LABELS[k]}</text>`;
-    labels += `<text x="${x}" y="${y+dy+13}" text-anchor="${anchor}" style="font-family:'JetBrains Mono',monospace;" font-size="10" fill="${color}">LV ${lvl}</text>`;
+    labels += `<text x="${x}" y="${y+dy}" text-anchor="middle" font-size="19">${PART_ICONS[k]}</text>`;
+    labels += `<text x="${x}" y="${y+dy+15}" text-anchor="middle" style="font-family:'JetBrains Mono',monospace;" font-size="10" fill="${color}">LV ${lvl}</text>`;
   });
-  return `<svg viewBox="0 0 240 260" style="width:100%; max-width:280px; display:block; margin:0 auto;">
+  return `<svg viewBox="0 0 260 280" style="width:100%; max-width:280px; display:block; margin:0 auto;">
     ${gridPolys}${axisLines}
     <polygon points="${dataPts}" fill="${color}26" stroke="${color}" stroke-width="2"/>
     ${dots}${labels}
@@ -942,27 +893,82 @@ function renderProfile(){
     disp.classList.remove('set');
   }
 
-  document.getElementById('radarMuscle').innerHTML = buildRadarSVG(GROUP_MUSCLE, '#E3B341');
-  document.getElementById('radarPerf').innerHTML = buildRadarSVG(GROUP_PERF, '#8C7CE0');
+  document.getElementById('radarMuscle').innerHTML = buildRadarSVG(GROUP_MUSCLE, '#35D2FF');
+  document.getElementById('radarPerf').innerHTML = buildRadarSVG(GROUP_PERF, '#9B6BFF');
 }
 
 /* ---------- Exercises ---------- */
+let compactView = false;
+let pendingDeleteExId = null;
+let pendingDeleteTimer = null;
+
+function toggleCompact(forceOn){
+  compactView = (forceOn === true) ? true : !compactView;
+  try{ localStorage.setItem('ui-compact', compactView ? '1':'0'); }catch(e){}
+  const btn = document.getElementById('compactToggleBtn');
+  if(btn){ btn.textContent = compactView ? '▦ Xem đầy đủ' : '☰ Thu gọn'; btn.classList.toggle('on', compactView); }
+  document.getElementById('exGrid').style.display = compactView ? 'none' : 'grid';
+  document.getElementById('exRows').style.display = compactView ? 'flex' : 'none';
+  renderExercises();
+}
+
+function getFilteredExercises(){
+  const term = (document.getElementById('exSearch')?.value || '').trim().toLowerCase();
+  if(!term) return state.exercises;
+  return state.exercises.filter(ex=> ex.name.toLowerCase().includes(term));
+}
+
+function onDeleteExerciseClick(id){
+  if(pendingDeleteExId === id){
+    clearTimeout(pendingDeleteTimer);
+    pendingDeleteExId = null;
+    deleteExercise(id);
+  } else {
+    pendingDeleteExId = id;
+    renderExercises();
+    clearTimeout(pendingDeleteTimer);
+    pendingDeleteTimer = setTimeout(()=>{ pendingDeleteExId = null; renderExercises(); }, 3000);
+  }
+}
+
 function renderExercises(){
-  const el = document.getElementById('exGrid');
+  const filtered = getFilteredExercises();
+  const gridEl = document.getElementById('exGrid');
+  const rowsEl = document.getElementById('exRows');
+
   if(state.exercises.length === 0){
-    el.innerHTML = `<div class="empty-log">Chưa có bài tập nào. Thêm bài tập ở mục 02.</div>`;
+    gridEl.innerHTML = `<div class="empty-log">Chưa có bài tập nào. Thêm bài tập ở mục 02.</div>`;
+    rowsEl.innerHTML = gridEl.innerHTML;
     return;
   }
-  el.innerHTML = state.exercises.map(ex=>{
-    const tags = PARTS.filter(p=> ex.xp[p] > 0).map(p=> `<span class="tag">${PART_LABELS[p]} +${ex.xp[p]}</span>`).join('');
+  if(filtered.length === 0){
+    const msg = `<div class="empty-log">Không tìm thấy bài tập nào khớp tìm kiếm.</div>`;
+    gridEl.innerHTML = msg; rowsEl.innerHTML = msg;
+    return;
+  }
+
+  gridEl.innerHTML = filtered.map(ex=>{
+    const tags = PARTS.filter(p=> ex.xp[p] > 0).map(p=> `<span class="tag">${PART_ICONS[p]} ${PART_LABELS[p]} +${ex.xp[p]}</span>`).join('');
+    const isPending = pendingDeleteExId === ex.id;
     return `<div class="ex-card">
       <div class="ex-name">${escapeHtml(ex.name)}</div>
       <div class="ex-tags">${tags}<span class="tag calo">🔥 ${caloText(ex.caloMin, ex.caloMax)} kcal</span></div>
       <div class="ex-count">Đã thực hiện: ${ex.count} lần</div>
       <div class="ex-actions">
         <button class="btn-plus" onclick="logExercise('${ex.id}')">+1 lần</button>
-        <button class="btn-del" onclick="deleteExercise('${ex.id}')" title="Xóa bài tập">✕</button>
+        <button class="btn-del ${isPending?'confirm':''}" onclick="onDeleteExerciseClick('${ex.id}')" title="${isPending?'Bấm lần nữa để xác nhận xóa':'Xóa bài tập'}">${isPending?'✓':'✕'}</button>
       </div>
+    </div>`;
+  }).join('');
+
+  rowsEl.innerHTML = filtered.map(ex=>{
+    const isPending = pendingDeleteExId === ex.id;
+    const totalXp = PARTS.reduce((s,p)=> s + (ex.xp[p]||0), 0);
+    return `<div class="ex-row">
+      <span class="ex-row-name">${escapeHtml(ex.name)}</span>
+      <span class="ex-row-meta">+${totalXp} XP · <span class="calo">🔥${caloText(ex.caloMin, ex.caloMax)}</span> · x${ex.count}</span>
+      <button class="btn-plus" onclick="logExercise('${ex.id}')">+1</button>
+      <button class="btn-del ${isPending?'confirm':''}" onclick="onDeleteExerciseClick('${ex.id}')" title="${isPending?'Bấm lần nữa để xác nhận xóa':'Xóa bài tập'}">${isPending?'✓':'✕'}</button>
     </div>`;
   }).join('');
 }
@@ -1080,7 +1086,7 @@ function renderRankReqHtml(requirements){
     const pct = Math.min(100, Math.round((cur / req.xp) * 100));
     const done = cur >= req.xp;
     return `<div class="req-item">
-      <div class="req-top"><span>${PART_LABELS[req.stat]}</span><span>${Math.min(cur,req.xp)}/${req.xp} XP</span></div>
+      <div class="req-top"><span>${PART_ICONS[req.stat]} ${PART_LABELS[req.stat]}</span><span>${Math.min(cur,req.xp)}/${req.xp} XP</span></div>
       <div class="req-bar-track"><div class="req-bar-fill ${done?'done':''}" style="width:${pct}%"></div></div>
     </div>`;
   }).join('');
@@ -1096,7 +1102,7 @@ function renderRanks(){
   const grid = document.getElementById('rankGrid');
   const pending = state.ranks.filter(r=> !r.completed);
   if(state.ranks.length === 0){
-    grid.innerHTML = `<div class="empty-log">Chưa có danh hiệu nào. Tạo rank mới ở mục 04.</div>`;
+    grid.innerHTML = `<div class="empty-log">Chưa có danh hiệu nào. Tạo rank mới ở mục 02.</div>`;
     return;
   }
   if(pending.length === 0){
@@ -1164,7 +1170,7 @@ function renderAchievements(){
   const grid = document.getElementById('achGrid');
   const pending = state.achievements.filter(a=> !a.completed);
   if(state.achievements.length === 0){
-    grid.innerHTML = `<div class="empty-log">Chưa có thành tựu nào. Tạo mới ở mục 06.</div>`;
+    grid.innerHTML = `<div class="empty-log">Chưa có thành tựu nào. Tạo mới ở mục 02.</div>`;
     return;
   }
   if(pending.length === 0){
@@ -1278,6 +1284,12 @@ async function resetAll(){
 }
 
 loadState();
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('./sw.js').catch(err=> console.error('Đăng ký Service Worker lỗi', err));
+  });
+}
 </script>
 </body>
 </html>
